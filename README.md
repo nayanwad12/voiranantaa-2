@@ -1,0 +1,108 @@
+# VOIRANANTAA — To See the Infinite
+
+Website for **VOIRANANTAA Edition 01 / Infinite Raga**, a wearable-art competition and live experience by VOIRTALES.
+
+The homepage is a single descent through one night-time universe: **Sky → Air → Space → Water → Earth**. A WebGL background changes world as each chapter scrolls past. It stays mounted across pages, so moving between pages blends worlds instead of cutting.
+
+## Stack
+
+- **Next.js 15** (App Router, TypeScript), **Tailwind CSS 3**
+- **Lenis** for smooth scrolling, **GSAP ScrollTrigger** for scroll-linked text
+- A **raw WebGL** fragment shader for the universe: no 3D library, one ~7 KB shader file
+- **react-hook-form** + **zod** forms. The same schemas validate in the browser and in the API routes.
+- Self-hosted fonts: **Barlow Condensed** (stand-in for DIN Condensed) and **Montserrat**
+
+## Run
+
+```bash
+npm install
+npm run dev        # http://localhost:3000
+npm run build && npm start
+npm run lint
+npm run typecheck
+```
+
+Deploy to Vercel (zero config) or to any Node host with `npm run build && npm start`.
+
+## Where things live
+
+| What | Where |
+| --- | --- |
+| Brand, nav, footer links | `src/content/site.ts` |
+| Dates, fees, venue, status flags | `src/content/edition.ts` |
+| Rasas, categories, rules, criteria, partner tiers, timeline | `src/content/*.ts` |
+| Colour and type tokens | `src/app/globals.css` (`:root`) + `tailwind.config.ts` |
+| Universe shader / scene logic | `src/components/scene/` |
+| Homepage chapters | `src/app/page.tsx`, `src/components/home/` |
+| Forms + validation | `src/components/forms/`, `src/lib/schemas.ts` |
+| API stubs | `src/app/api/*/route.ts`, `src/lib/api.ts` |
+
+All copy that is expected to change lives in `src/content/`. These files are typed and CMS-ready: swap their exports for CMS queries without touching page code.
+
+### Status flags (`src/content/edition.ts`)
+
+| Flag | Effect |
+| --- | --- |
+| `registrationOpen` | `false`: the participant CTA shows "Registration opens first week of December 2026", and the form runs as a labelled **preview**. References get a `PREVIEW-` prefix and no payment is taken. |
+| `registrationClosesLabel` | Shown on the register page. Must be approved before going live. |
+| `ticketsLive` | Reserved. There is **no Buy Ticket / Get Pass button** anywhere until admission model, price, capacity and venue are confirmed. |
+| `judgesConfirmed` | `false`: the Judges page shows "To be announced". No placeholder people. |
+| `emailsConnected` | Controls whether confirmation pages promise an email. |
+| `show.venue`, `show.passes` | `null` renders "To be announced". |
+
+## Brand rules applied
+
+- The name is always the complete **VOIRANANTAA**: never split, never abbreviated, always with the double A. The Edition 01 deck's "VOIR ANANTA" was normalised to this.
+- Tagline: **TO SEE THE INFINITE**.
+- Black and blue lead and white gives clarity. Red, neon green and pink appear only as fine lines, accent bars, a light trail and mineral glints.
+- One gradient banner, used for one statement only: "One theme. Nine emotional worlds. Infinite interpretations."
+- The five cosmic elements organise the site. The nine rasas appear only as theme content (on the Infinite Raga page and in the form), never as the site structure.
+
+## Motion and accessibility
+
+- **Enter:** the hero name resolves letter by letter, then the tagline.
+- **Reveal:** text sharpens from blur as it enters. Key statements light up word by word.
+- **Rest:** "This is not a fashion show. This is wearable art." is held still.
+- **`prefers-reduced-motion`:** Lenis is off, reveals show immediately, and the universe is frozen in time. It still changes world as you scroll, which is visitor-driven.
+- **No WebGL, ≤2 CPU cores or Save-Data:** layered CSS gradients replace the shader.
+- The shader renders at reduced resolution, drops resolution if frames run slow, and pauses while the tab is hidden.
+- Skip link, keyboard-trappable menu with Esc to close, labelled form fields with linked errors, and visible focus states.
+
+## Forms
+
+| Journey | Page | API | Confirmation |
+| --- | --- | --- | --- |
+| Participant (3 steps: About you / Your work / Checkout) | `/participate/register` | `POST /api/participant` (multipart) | `/confirmation/participant` |
+| Partner | `/partners/enquire` | `POST /api/partner` | `/confirmation/partner` |
+| Visitor (interest only) | `/attend/register` | `POST /api/visitor` | `/confirmation/visitor` |
+| Contact | `/contact` | `POST /api/contact` | inline |
+| Newsletter | footer | `POST /api/newsletter` | inline |
+
+- Participant uploads: PDF/JPG/PNG/WEBP, 10 MB each, up to 5 files. Checked in the browser and again on the server.
+- Fee: ₹2,000 when status is *Student* and the student declaration is ticked, otherwise ₹3,500. The server computes it.
+- Progress on the participant form is saved to `localStorage` on the device (files excluded) and cleared after a successful submit.
+- Error, incomplete-form and upload-error states are recoverable. Nothing is lost on a failed submit.
+
+### Connecting the backend
+
+The API routes validate input, then call `persist()` in `src/lib/api.ts`, which currently only logs the reference. To go live:
+
+1. **Storage / admin:** write records in `persist()` to a database, Airtable or CRM. Add an admin view with filters, status tracking and CSV export.
+2. **Uploads:** stream `files` from `/api/participant` to private object storage (S3, R2 or GCS). Keep access controlled, and agree a retention period.
+3. **Payment:** create a payment order, e.g. Razorpay, after saving the application. Redirect to checkout, then confirm through the provider's webhook. Update `paymentStatus` and show the receipt on `/confirmation/participant`.
+4. **Email:** send transactional confirmations from `persist()` (e.g. Resend or Postmark), then set `edition.emailsConnected = true`. The newsletter needs double opt-in and unsubscribe.
+5. **Analytics:** track registration starts, step completion and submissions.
+
+### Using licensed DIN Condensed
+
+Put the `.woff2` files in `public/fonts/` and add an `@font-face` for `"DIN Condensed Web"` in `globals.css`. Then set `--font-display: "DIN Condensed Web";` in `:root`. Barlow Condensed stays as the fallback.
+
+## Decisions required before registration opens
+
+These come from the Edition 01 blueprint (p.25) and affect copy, form logic, payment and legal terms. They are also listed in `openDecisions` in `src/content/edition.ts`.
+
+**Event details:** exact registration opening and closing dates · final show date(s) · venue and capacity · free RSVP vs paid ticket · finalist announcement window.
+
+**Competition rules:** proposal-first vs finished-artwork submission · 95/5 measurement and verification · AI / machine-use policy wording · fee and refund policy · IP, image and publicity permissions · final safety specifications.
+
+The Privacy, Terms, Refund and Accessibility pages are marked **Draft**. Each one outlines what the approved text must cover.

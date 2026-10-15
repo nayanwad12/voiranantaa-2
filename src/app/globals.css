@@ -1,0 +1,300 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------
+   VOIRANANTAA tokens
+   Black and blue lead. White gives clarity.
+   Red, neon green and pink are accents only — fine lines, light trails,
+   micro-highlights or one limited gradient banner.
+------------------------------------------------------------------- */
+:root {
+  --black: #05070d;
+  --night: #080b16;
+  --panel: rgba(14, 18, 30, 0.72);
+  --line: rgba(160, 180, 220, 0.16);
+
+  --blue: #4c97ff;
+  --blue-soft: #8db8ff;
+  --blue-deep: #1b2a6b;
+  --white: #f5f8fc;
+  --mute: #9aa3b5;
+
+  --red: #ff4b5d;
+  --green: #beff4b;
+  --pink: #ff74cc;
+
+  /* Swap for licensed DIN Condensed when available — see README. */
+  --font-display: "Barlow Condensed";
+  --font-sans: "Montserrat Variable";
+
+  --header-h: 4.5rem;
+  --gutter: clamp(1rem, 4vw, 3.5rem);
+
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    overflow-x: clip;
+    background: var(--black);
+    color: var(--white);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  body {
+    /* Transparent so the fixed universe canvas (z -10) shows through. */
+    background: transparent;
+    font-family: var(--font-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--blue);
+    color: var(--black);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display), "DIN Condensed", "Arial Narrow", sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 0.95;
+    letter-spacing: 0.01em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* `hidden` must win over utility display classes (grid, flex…). */
+  [hidden]:not([hidden="until-found"]) {
+    display: none !important;
+  }
+
+  img,
+  svg,
+  canvas {
+    display: block;
+  }
+}
+
+@layer components {
+  .page-x {
+    padding-left: var(--gutter);
+    padding-right: var(--gutter);
+  }
+
+  .label {
+    font-family: var(--font-sans), sans-serif;
+    font-weight: 600;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue-soft);
+  }
+
+  .display-xl {
+    font-size: clamp(3.25rem, 11vw, 10.5rem);
+    line-height: 0.86;
+  }
+  .display-lg {
+    font-size: clamp(2.6rem, 7vw, 6.5rem);
+    line-height: 0.9;
+  }
+  .display-md {
+    font-size: clamp(2rem, 4.6vw, 4rem);
+  }
+  .display-sm {
+    font-size: clamp(1.4rem, 2.4vw, 2rem);
+  }
+
+  .lede {
+    font-size: clamp(1.15rem, 1.9vw, 1.6rem);
+    line-height: 1.45;
+    font-weight: 300;
+    color: var(--white);
+  }
+
+  .body-copy {
+    color: var(--mute);
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  .glass {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    -webkit-backdrop-filter: blur(14px) saturate(120%);
+    backdrop-filter: blur(14px) saturate(120%);
+  }
+
+  .hairline {
+    height: 1px;
+    background: var(--line);
+  }
+
+  /* The one gradient banner — conference-stage colour band. Use sparingly. */
+  .gradient-band {
+    background:
+      linear-gradient(90deg, var(--red) 0%, var(--pink) 22%, var(--blue) 55%, #3fd0ff 78%, var(--green) 100%);
+  }
+
+  .skip-link {
+    position: absolute;
+    left: 1rem;
+    top: -4rem;
+    z-index: 100;
+    background: var(--white);
+    color: var(--black);
+    padding: 0.6rem 1rem;
+    font-weight: 600;
+    transition: top 0.2s;
+  }
+  .skip-link:focus {
+    top: 1rem;
+  }
+}
+
+/* Text reveal: starts soft and dim, sharpens as it enters. JS adds .is-in. */
+.js [data-reveal] {
+  opacity: 0;
+  filter: blur(10px);
+  transform: translate3d(0, 1.25rem, 0);
+  transition:
+    opacity 1.1s cubic-bezier(0.2, 0.7, 0.1, 1),
+    filter 1.1s cubic-bezier(0.2, 0.7, 0.1, 1),
+    transform 1.1s cubic-bezier(0.2, 0.7, 0.1, 1);
+  transition-delay: var(--reveal-delay, 0s);
+}
+.js [data-reveal].is-in {
+  opacity: 1;
+  filter: blur(0);
+  transform: none;
+}
+
+/* Word-by-word highlight for statements. */
+.scrub-word {
+  color: rgba(245, 248, 252, 0.16);
+  transition: color 0.4s ease;
+}
+.scrub-word.is-lit {
+  color: var(--white);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .js [data-reveal] {
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+  .scrub-word {
+    color: var(--white);
+  }
+}
+
+/* Rings draw on with restraint. */
+.ring-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: ring-draw 2.6s cubic-bezier(0.6, 0, 0.2, 1) forwards;
+}
+@keyframes ring-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Hero entrance: the name arrives slowly, letter by letter. */
+.enter-letter {
+  display: inline-block;
+  opacity: 0;
+  filter: blur(14px);
+  transform: translateY(0.12em);
+  animation: enter-letter 1.6s cubic-bezier(0.2, 0.7, 0.1, 1) forwards;
+}
+.enter-fade {
+  opacity: 0;
+  animation: enter-fade 1.4s ease forwards;
+}
+@keyframes enter-letter {
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+  }
+}
+@keyframes enter-fade {
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ring-draw {
+    stroke-dashoffset: 0;
+  }
+  .enter-letter,
+  .enter-fade {
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+}
+
+.menu-item {
+  opacity: 0;
+  transform: translateY(0.6rem);
+  animation: enter-letter 0.7s cubic-bezier(0.2, 0.7, 0.1, 1) forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .menu-item {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.scroll-cue::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--blue);
+  transform: translateY(-100%);
+  animation: scroll-cue 2.4s cubic-bezier(0.6, 0, 0.2, 1) infinite;
+}
+@keyframes scroll-cue {
+  0% { transform: translateY(-100%); }
+  60%, 100% { transform: translateY(100%); }
+}
