@@ -1,16 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { journeys, menuNav, site } from "@/content/site";
+import { useRoute } from "@/lib/preview";
 import { accentVar } from "@/lib/accent";
 import { cx } from "@/lib/cx";
 import { lenisRef } from "@/components/motion/SmoothScroll";
 import { Logo } from "./Logo";
 
 export function MenuOverlay({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const pathname = usePathname();
+  const pathname = useRoute();
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
 

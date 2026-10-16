@@ -1,15 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { primaryNav } from "@/content/site";
+import { useRoute } from "@/lib/preview";
 import { cx } from "@/lib/cx";
 import { Logo } from "./Logo";
 import { MenuOverlay } from "./MenuOverlay";
 
 export function Header() {
-  const pathname = usePathname();
+  const pathname = useRoute();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 

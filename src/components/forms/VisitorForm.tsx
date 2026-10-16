@@ -1,18 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm, type FieldPath } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AUDIENCE_OPTIONS, visitorSchema, type VisitorInput } from "@/lib/schemas";
 import { Arrow, Button } from "@/components/ui/Button";
+import { useNavigate } from "@/lib/preview";
 import { CheckboxField, SelectField, TextArea, TextField } from "./fields";
 import { FormAlert } from "./FormAlert";
 import { submitForm } from "./submit";
 
 export function VisitorForm() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const [serverError, setServerError] = useState<string>();
   const {
     register,
@@ -28,7 +28,7 @@ export function VisitorForm() {
   const onValid = async (values: VisitorInput) => {
     setServerError(undefined);
     const res = await submitForm("/api/visitor", values);
-    if (res.ok) return router.push(`/confirmation/visitor?ref=${encodeURIComponent(res.reference)}`);
+    if (res.ok) return navigate("/confirmation/visitor", { ref: res.reference });
     setServerError(res.message);
     Object.entries(res.fieldErrors ?? {}).forEach(([k, v]) => setError(k as FieldPath<VisitorInput>, { message: v?.[0] }));
   };

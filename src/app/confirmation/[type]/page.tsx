@@ -1,31 +1,25 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { edition, formatINR } from "@/content/edition";
+import { edition } from "@/content/edition";
 import { site } from "@/content/site";
 import { Arrow, ButtonLink } from "@/components/ui/Button";
 import { Rings } from "@/components/ui/Rings";
-import { StatusTag } from "@/components/ui/StatusTag";
+import { ConfirmationDetails } from "./ConfirmationDetails";
 
 export const metadata: Metadata = { title: "Confirmation", robots: { index: false } };
 
 type Params = Promise<{ type: string }>;
-type Search = Promise<Record<string, string | string[] | undefined>>;
-
-const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
-const safeRef = (v?: string) => (v && /^[A-Z0-9-]{4,40}$/.test(v) ? v : undefined);
+type Kind = "participant" | "partner" | "visitor";
 
 export function generateStaticParams() {
   return [{ type: "participant" }, { type: "partner" }, { type: "visitor" }];
 }
 
-export default async function ConfirmationPage({ params, searchParams }: { params: Params; searchParams: Search }) {
-  const { type } = await params;
-  const q = await searchParams;
-  const reference = safeRef(one(q.ref));
-  if (!["participant", "partner", "visitor"].includes(type)) notFound();
+export const dynamicParams = false;
 
-  const fee = Number(one(q.fee));
-  const preview = one(q.preview) === "1";
+export default async function ConfirmationPage({ params }: { params: Params }) {
+  const { type } = await params;
+  if (!["participant", "partner", "visitor"].includes(type)) notFound();
 
   const content = {
     participant: {
@@ -59,7 +53,7 @@ export default async function ConfirmationPage({ params, searchParams }: { param
       ],
       next: { href: "/experience", label: "The live format" },
     },
-  }[type as "participant" | "partner" | "visitor"];
+  }[type as Kind];
 
   return (
     <main id="main" data-scene="2" data-scene-dim="0.45">
@@ -71,32 +65,13 @@ export default async function ConfirmationPage({ params, searchParams }: { param
         <h1 className="display-xl max-w-5xl">{content.title}</h1>
 
         <div className="mt-12 grid max-w-2xl gap-4">
-          {reference && (
-            <div className="glass flex flex-wrap items-center justify-between gap-4 rounded-xl px-6 py-5">
-              <span className="label text-mute">{type === "participant" ? "Application ID" : "Reference"}</span>
-              <span className="font-mono text-lg tracking-wider text-paper">{reference}</span>
-            </div>
-          )}
-          {type === "participant" && (
-            <div className="glass flex flex-wrap items-center justify-between gap-4 rounded-xl px-6 py-5">
-              <span className="label text-mute">Payment status</span>
-              <span className="flex items-center gap-3 text-paper">
-                {Number.isFinite(fee) && fee > 0 ? formatINR(fee) : null}
-                <StatusTag tone="pink">{preview ? "Preview — no payment taken" : "Pending"}</StatusTag>
-              </span>
-            </div>
-          )}
+          <ConfirmationDetails type={type as Kind} />
           <div className="mt-4 grid gap-3">
             {content.lines.map((l) => (
               <p key={l} className="body-copy text-[1.05rem]">
                 {l}
               </p>
             ))}
-            {preview && (
-              <p className="body-copy text-[1.05rem]">
-                This was a preview submission — registration opens {edition.registrationOpensLabel.replace(/^First/, "in the first")}.
-              </p>
-            )}
           </div>
         </div>
 

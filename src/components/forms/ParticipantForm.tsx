@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useForm, type FieldPath } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -16,6 +15,7 @@ import {
   type ParticipantInput,
 } from "@/lib/schemas";
 import { lenisRef } from "@/components/motion/SmoothScroll";
+import { STATIC_PREVIEW, useNavigate } from "@/lib/preview";
 import { Arrow, Button } from "@/components/ui/Button";
 import { CheckboxField, ChoiceGroup, SelectField, TextArea, TextField } from "./fields";
 import { FileDrop } from "./FileDrop";
@@ -27,7 +27,7 @@ import { useFormDraft } from "./useFormDraft";
 const DRAFT_KEY = "voiranantaa:participant-draft:v1";
 
 export function ParticipantForm() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const topRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const [step, setStep] = useState(0);
@@ -104,13 +104,12 @@ export function ParticipantForm() {
     const res = await submitForm("/api/participant", body);
     if (res.ok) {
       clear();
-      const q = new URLSearchParams({
+      navigate("/confirmation/participant", {
         ref: res.reference,
         fee: String(res.fee ?? fee),
         payment: String(res.paymentStatus ?? "pending"),
         ...(res.preview ? { preview: "1" } : {}),
       });
-      router.push(`/confirmation/participant?${q}`);
       return;
     }
     setServerError(res.message);
@@ -147,7 +146,9 @@ export function ParticipantForm() {
       {preview && (
         <FormAlert
           tone="info"
-          message={`Preview: registration opens ${edition.registrationOpensLabel.replace(/^First/, "in the first")}. You can explore the form now — submissions are saved as previews and no payment is taken.`}
+          message={`Preview: registration opens ${edition.registrationOpensLabel.replace(/^First/, "in the first")}. You can explore the form now — ${
+            STATIC_PREVIEW ? "nothing you enter is sent or stored" : "submissions are saved as previews"
+          } and no payment is taken.`}
         />
       )}
       {restored && step === 0 && <FormAlert tone="info" message="We restored your saved progress on this device." />}

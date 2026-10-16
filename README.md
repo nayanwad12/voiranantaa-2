@@ -24,6 +24,19 @@ npm run typecheck
 
 Deploy to Vercel (zero config) or to any Node host with `npm run build && npm start`.
 
+## Static preview
+
+```bash
+npm run build:preview      # → out-preview/ (static, no server, works under any sub-path)
+```
+
+This build sets `NEXT_PUBLIC_STATIC_PREVIEW=1` (see `src/lib/preview.ts`):
+- Pages are exported as files (`rules/index.html`), and internal links become full page loads to those files.
+- API routes are left out. Forms still validate in the browser, then show their confirmation pages with a `PREVIEW-` reference. Nothing is sent or stored.
+- Asset paths are rewritten to be relative, so the folder can be hosted anywhere, including a claude.ai Artifact or any static host.
+
+The normal `npm run build` is unchanged by this.
+
 ## Where things live
 
 | What | Where |

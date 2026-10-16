@@ -1,19 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm, type FieldPath } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { partnerTiers } from "@/content/partners";
 import { partnerSchema, type PartnerInput } from "@/lib/schemas";
 import { Arrow, Button } from "@/components/ui/Button";
+import { useNavigate } from "@/lib/preview";
 import { CheckboxField, ChoiceGroup, TextArea, TextField } from "./fields";
 import { FormAlert } from "./FormAlert";
 import { submitForm } from "./submit";
 
 export function PartnerForm() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const [serverError, setServerError] = useState<string>();
   const {
     register,
@@ -29,7 +29,7 @@ export function PartnerForm() {
   const onValid = async (values: PartnerInput) => {
     setServerError(undefined);
     const res = await submitForm("/api/partner", values);
-    if (res.ok) return router.push(`/confirmation/partner?ref=${encodeURIComponent(res.reference)}`);
+    if (res.ok) return navigate("/confirmation/partner", { ref: res.reference });
     setServerError(res.message);
     Object.entries(res.fieldErrors ?? {}).forEach(([k, v]) => setError(k as FieldPath<PartnerInput>, { message: v?.[0] }));
   };
