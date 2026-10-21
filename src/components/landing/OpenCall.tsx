@@ -46,7 +46,7 @@ export function OpenCall() {
   const row = (list: readonly string[]) => Array.from({ length: 3 }, () => list.map((p) => `${p} ✦ `).join("")).join("");
 
   return (
-    <section ref={ref} data-form="8" data-element="4" className="relative overflow-hidden bg-crimson py-28 text-black md:py-36">
+    <section ref={ref} data-form="8" className="relative overflow-hidden bg-crimson py-28 text-black md:py-36">
       <div className="page-x mx-auto max-w-page">
         <p className="mb-6 font-sans text-xs font-semibold uppercase tracking-[0.24em]">Open call · Edition 01</p>
         <h2 className="oc-h font-display text-[clamp(3.6rem,11vw,11rem)] font-bold uppercase leading-[0.82]">

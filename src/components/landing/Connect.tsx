@@ -21,7 +21,7 @@ export function Connect() {
   });
 
   return (
-    <section ref={ref} data-form="8" data-element="4" className="relative">
+    <section ref={ref} data-form="8" className="relative">
       <span id="voirtales" aria-hidden="true" className="block h-0" />
       <div className="page-x mx-auto grid max-w-page gap-8 py-28 md:grid-cols-[1fr_1.2fr] md:gap-20 md:py-36">
         <div className="cn-in">

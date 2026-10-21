@@ -122,7 +122,7 @@ export function HowToParticipate() {
   });
 
   return (
-    <section ref={ref} data-form="7" data-element="4" className="relative">
+    <section ref={ref} data-form="7" className="relative">
       <div className="ht-stage page-x mx-auto grid min-h-[100svh] max-w-page items-center gap-10 py-24 md:grid-cols-[1fr_1.1fr] md:gap-16">
         <div>
           <p className="label mb-6 text-mute">How to participate</p>

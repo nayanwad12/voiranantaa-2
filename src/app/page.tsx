@@ -1,5 +1,4 @@
 import { Intro } from "@/components/landing/Intro";
-import { ElementPill } from "@/components/landing/ElementPill";
 import { ApplyOverlay } from "@/components/landing/ApplyOverlay";
 import { Hero } from "@/components/landing/Hero";
 import { Idea } from "@/components/landing/Idea";
@@ -26,15 +25,13 @@ function Anchor({ id }: { id: string }) {
 
 /**
  * Edition 01 — everything on one page: the descent from Sky to Earth.
- * Each section names the shape the universe takes behind it (data-form)
- * and the element it belongs to (data-element).
+ * Each section names the shape the universe takes behind it (data-form).
  */
 export default function HomePage() {
   return (
     <main id="main" data-scene="0" className="relative">
       <Anchor id="top" />
       <Intro />
-      <ElementPill />
       <ApplyOverlay />
 
       {/* 01 SKY — the edition and the idea */}

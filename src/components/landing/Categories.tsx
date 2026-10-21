@@ -37,7 +37,7 @@ export function Categories() {
   });
 
   return (
-    <section ref={ref} data-form="4" data-element="2" className="relative overflow-hidden md:h-[100svh]">
+    <section ref={ref} data-form="4" className="relative overflow-hidden md:h-[100svh]">
       <h2 className="sr-only">Two categories. Two approaches.</h2>
       <div className="grid h-full md:grid-cols-2">
         {categories.map((cat, i) => (

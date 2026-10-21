@@ -37,7 +37,6 @@ export function Gate({
     <section
       ref={ref}
       data-form={form}
-      data-element={index - 1}
       aria-label={`Chapter ${index}: ${name}`}
       className="relative flex h-[100svh] flex-col items-center justify-center overflow-hidden text-center"
     >

@@ -67,7 +67,7 @@ export function Live() {
   const elements = Array.from({ length: 3 }, () => edition.live.elements.map((e) => `${e} · `).join("")).join("");
 
   return (
-    <section ref={ref} data-form="6" data-element="3" className="relative overflow-hidden">
+    <section ref={ref} data-form="6" className="relative overflow-hidden">
       <div className="live-stage page-x mx-auto grid min-h-[100svh] max-w-page items-center gap-10 py-24 md:grid-cols-[1fr_1fr] md:gap-16">
         <div>
           <p className="label mb-6 text-mute">Live experience</p>

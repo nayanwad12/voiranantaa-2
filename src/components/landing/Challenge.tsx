@@ -58,7 +58,7 @@ export function Challenge() {
   });
 
   return (
-    <section ref={ref} data-form="5" data-element="2" className="relative overflow-hidden">
+    <section ref={ref} data-form="5" className="relative overflow-hidden">
       <div className="ch-stage relative flex min-h-[100svh] items-center">
         <div aria-hidden="true" className="absolute inset-0 hidden md:block">
           {MATERIALS.map((m) => (

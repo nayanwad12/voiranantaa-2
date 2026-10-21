@@ -46,7 +46,7 @@ export function Theme() {
   const rowB = Array.from({ length: 4 }, () => "A melody with no end — ").join("");
 
   return (
-    <section ref={ref} data-form="2" data-element="1" className="relative overflow-hidden py-24 sm:py-32">
+    <section ref={ref} data-form="2" className="relative overflow-hidden py-24 sm:py-32">
       <h2 className="sr-only">Infinite Raga — a melody with no end</h2>
       <div aria-hidden="true" className="select-none whitespace-nowrap font-display font-bold uppercase leading-[0.85]">
         <p className="theme-row-a outline-type whitespace-nowrap text-[clamp(5rem,17vw,16rem)]">{rowA}</p>

@@ -26,7 +26,7 @@ export function GradientBand() {
 
   const line = Array.from({ length: 3 }, () => "One theme · Nine emotional worlds · Infinite interpretations · ").join("");
   return (
-    <section ref={ref} data-form="3" data-element="1" className="relative py-16">
+    <section ref={ref} data-form="3" className="relative py-16">
       <h2 className="sr-only">One theme. Nine emotional worlds. Infinite interpretations.</h2>
       <div className="band gradient-band overflow-hidden py-8 md:py-12" aria-hidden="true">
         <p className="band-text whitespace-nowrap font-display text-[clamp(3rem,9vw,8.5rem)] font-bold uppercase leading-none text-black">

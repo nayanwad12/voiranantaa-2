@@ -44,7 +44,7 @@ export function Hero() {
   });
 
   return (
-    <section ref={ref} data-form="0" data-element="0" className="relative h-[100svh] overflow-hidden">
+    <section ref={ref} data-form="0" className="relative h-[100svh] overflow-hidden">
       <div className="page-x mx-auto flex h-full max-w-page flex-col justify-between pb-8 pt-[calc(var(--header-h)+1.5rem)]">
         <div className="hero-out hero-fade flex items-center justify-between font-sans text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-mute">
           <span>{edition.label}</span>
@@ -91,10 +91,6 @@ export function Hero() {
             </a>
           </div>
         </div>
-      </div>
-      <div className="hero-out pointer-events-none absolute bottom-24 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-3 sm:flex">
-        <span className="label text-mute">Scroll to descend</span>
-        <span className="scroll-line" />
       </div>
     </section>
   );

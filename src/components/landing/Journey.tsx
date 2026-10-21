@@ -31,7 +31,7 @@ export function Journey() {
   });
 
   return (
-    <section ref={ref} data-form="7" data-element="3" className="relative overflow-hidden">
+    <section ref={ref} data-form="7" className="relative overflow-hidden">
       <div className="jr-stage page-x mx-auto flex min-h-[100svh] max-w-page flex-col justify-center py-24">
         <div className="mb-14 flex flex-wrap items-end justify-between gap-6">
           <h2 className="veil font-display text-[clamp(2.8rem,6.5vw,6.5rem)] font-bold uppercase leading-[0.86]">

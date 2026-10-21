@@ -21,7 +21,7 @@ export function RasaGallery() {
   });
 
   return (
-    <section ref={ref} data-form="3" data-element="1" className="relative py-16 md:py-20">
+    <section ref={ref} data-form="3" className="relative py-16 md:py-20">
       <div className="page-x mx-auto max-w-page">
         <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <h2 className="veil font-display text-[clamp(1.8rem,3vw,2.6rem)] font-bold uppercase leading-none">The nine rasas</h2>

@@ -58,7 +58,7 @@ export function Selection() {
   });
 
   return (
-    <section ref={ref} data-form="4" data-element="4" className="relative py-28 md:py-36">
+    <section ref={ref} data-form="4" className="relative py-28 md:py-36">
       <span id="selection" aria-hidden="true" className="block h-0" />
       <div className="page-x mx-auto max-w-page">
         <p className="label mb-6 text-mute">Selection process</p>

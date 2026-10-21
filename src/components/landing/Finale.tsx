@@ -36,7 +36,7 @@ export function Finale() {
   ];
 
   return (
-    <section ref={ref} data-form="9" data-element="4" className="relative">
+    <section ref={ref} data-form="9" className="relative">
       <div className="fin-stage page-x mx-auto flex min-h-[100svh] max-w-page flex-col justify-center py-24">
         <h2
           aria-label={QUESTION}

@@ -41,7 +41,7 @@ export function Attend() {
   ];
 
   return (
-    <section ref={ref} data-form="0" data-element="4" className="relative py-28 md:py-36">
+    <section ref={ref} data-form="0" className="relative py-28 md:py-36">
       <div className="page-x mx-auto max-w-page">
         <p className="label mb-6 text-mute">Attend the show</p>
         <h2 className="at-h font-display text-[clamp(3.2rem,9vw,9rem)] font-bold uppercase leading-[0.84]">

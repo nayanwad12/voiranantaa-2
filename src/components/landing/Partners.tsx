@@ -24,7 +24,7 @@ export function Partners() {
   });
 
   return (
-    <section ref={ref} data-form="8" data-element="4" className="relative py-28 md:py-40">
+    <section ref={ref} data-form="8" className="relative py-28 md:py-40">
       <div className="page-x mx-auto max-w-page">
         <div className="mb-16 grid gap-8 md:grid-cols-[1.4fr_1fr] md:items-end">
           <h2 className="pt-h font-display text-[clamp(3.2rem,8.5vw,8.5rem)] font-bold uppercase leading-[0.84]">

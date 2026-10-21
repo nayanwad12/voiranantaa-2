@@ -298,19 +298,6 @@
   }
 }
 
-.scroll-cue::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--blue);
-  transform: translateY(-100%);
-  animation: scroll-cue 2.4s cubic-bezier(0.6, 0, 0.2, 1) infinite;
-}
-@keyframes scroll-cue {
-  0% { transform: translateY(-100%); }
-  60%, 100% { transform: translateY(100%); }
-}
-
 /* ------------------------------------------------------------------
    Landing page
 ------------------------------------------------------------------- */
@@ -367,22 +354,6 @@
   border-color: #000;
   color: #000;
 }
-}
-
-.scroll-line {
-  position: relative;
-  display: block;
-  width: 1px;
-  height: 3rem;
-  overflow: hidden;
-  background: rgba(245, 248, 252, 0.2);
-}
-.scroll-line::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--mustard);
-  animation: scroll-cue 2.4s cubic-bezier(0.6, 0, 0.2, 1) infinite;
 }
 
 /* Idea: both statements share one stage once animated. */

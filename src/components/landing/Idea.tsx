@@ -33,7 +33,7 @@ export function Idea() {
   });
 
   return (
-    <section ref={ref} data-form="1" data-element="0" className="relative min-h-[100svh] overflow-hidden">
+    <section ref={ref} data-form="1" className="relative min-h-[100svh] overflow-hidden">
       <div className="idea-stage page-x mx-auto grid min-h-[100svh] max-w-page place-items-center gap-10 py-24 text-center [perspective:1000px]">
         <div className="idea-not relative">
           <p className="font-display text-[clamp(3rem,10.5vw,10rem)] font-bold uppercase leading-[0.88]">
