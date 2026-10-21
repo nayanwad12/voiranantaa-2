@@ -9,7 +9,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
 import { RevealObserver } from "@/components/motion/RevealObserver";
-import { UniverseCanvas } from "@/components/scene/UniverseCanvas";
+import { Universe } from "@/components/universe/Universe";
 import { PreviewLinks } from "@/components/motion/PreviewLinks";
 import { STATIC_PREVIEW } from "@/lib/preview";
 
@@ -47,7 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a href="#main" className="skip-link">
           Skip to content
         </a>
-        <UniverseCanvas />
+        <Universe />
         <SmoothScroll />
         <RevealObserver />
         {STATIC_PREVIEW && <PreviewLinks />}

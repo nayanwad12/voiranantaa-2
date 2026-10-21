@@ -5,7 +5,8 @@ import { edition, formatINR } from "@/content/edition";
 import { PageHero, Section } from "@/components/ui/Section";
 import { Card } from "@/components/ui/Card";
 import { StatusTag } from "@/components/ui/StatusTag";
-import { ParticipateCTA, Timeline } from "@/components/home/sections";
+import { ParticipateCTA } from "@/components/ui/ParticipateCTA";
+import { Timeline } from "@/components/ui/Timeline";
 
 export const metadata: Metadata = {
   title: "Participate — Make an idea wearable",

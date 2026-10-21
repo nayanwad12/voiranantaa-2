@@ -7,7 +7,7 @@ const config: Config = {
       colors: {
         // Hex values (mirrors of the CSS tokens in globals.css) so opacity
         // modifiers such as bg-ink/60 work.
-        ink: "#05070d",
+        ink: "#000000",
         night: "#080b16",
         line: "rgba(160, 180, 220, 0.16)",
         blue: { DEFAULT: "#4c97ff", soft: "#8db8ff", deep: "#1b2a6b" },
