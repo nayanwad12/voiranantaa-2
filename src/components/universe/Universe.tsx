@@ -29,7 +29,7 @@ function readTarget() {
     const next = sections[i + 1];
     const to = next ? Number(next.dataset.form) : from;
     const progress = clamp((mid - r.top) / Math.max(1, r.height), 0, 1);
-    t = { from, to, mix: from === to ? 0 : smooth(0.55, 1, progress) };
+    t = { from, to, mix: from === to ? 0 : smooth(0.3, 1, progress) };
   });
   return t;
 }
@@ -86,7 +86,15 @@ export function Universe() {
       dirty = true;
     };
 
-    const cur = { mix: 0, from: 0, to: 0 };
+    // The visible mood, eased towards the scroll-driven one. Easing the values
+    // themselves (not the blend index) keeps chapter boundaries seamless.
+    const first = SCENES[readTarget().from] ?? SCENES[0];
+    const cur = {
+      pal: Float32Array.from(first.pal.flat()),
+      angle: first.angle,
+      density: first.density,
+      focus: [first.focus[0], first.focus[1]],
+    };
     let time = 12;
     let drift = 0;
     let vel = 0;
@@ -94,23 +102,35 @@ export function Universe() {
     let last = performance.now();
     let raf = 0;
     let dirty = true;
-    const pal = new Float32Array(15);
 
     const frame = (now: number) => {
       raf = requestAnimationFrame(frame);
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
       const target = readTarget();
-      const changed = target.from !== cur.from || target.to !== cur.to || Math.abs(target.mix - cur.mix) > 1e-3;
-      cur.from = target.from;
-      cur.to = target.to;
-      cur.mix += (target.mix - cur.mix) * (reduced ? 1 : 1 - Math.exp(-dt * 4));
+      const a = SCENES[target.from] ?? SCENES[0];
+      const b = SCENES[target.to] ?? a;
+      const m = target.mix;
+      const ease = reduced ? 1 : 1 - Math.exp(-dt * 1.1);
+      let changed = false;
+      const approach = (curV: number, to: number) => {
+        const next = curV + (to - curV) * ease;
+        if (Math.abs(next - curV) > 1e-4) changed = true;
+        return next;
+      };
+      for (let i = 0; i < 5; i++)
+        for (let j = 0; j < 3; j++) cur.pal[i * 3 + j] = approach(cur.pal[i * 3 + j], lerp(a.pal[i][j], b.pal[i][j], m));
+      cur.angle = approach(cur.angle, lerp(a.angle, b.angle, m));
+      cur.density = approach(cur.density, lerp(a.density, b.density, m));
+      cur.focus[0] = approach(cur.focus[0], lerp(a.focus[0], b.focus[0], m));
+      cur.focus[1] = approach(cur.focus[1], lerp(a.focus[1], b.focus[1], m));
 
       const y = window.scrollY;
       const raw = lenisRef.current?.velocity ?? (y - lastY) / Math.max(dt, 1 / 120) / 60;
       lastY = y;
-      vel += (clamp(raw / 40, -1, 1) - vel) * (1 - Math.exp(-dt * 5));
-      drift += ((y / window.innerHeight) * 0.6 - drift) * (1 - Math.exp(-dt * 3));
+      // Scroll speed eases in and out slowly, so streaks lengthen gently.
+      vel += (clamp(raw / 40, -1, 1) - vel) * (1 - Math.exp(-dt * 1.4));
+      drift += ((y / window.innerHeight) * 0.6 - drift) * (1 - Math.exp(-dt * 1.2));
 
       if (reduced) {
         if (!changed && !dirty) return;
@@ -119,14 +139,10 @@ export function Universe() {
       }
       dirty = false;
 
-      const a = SCENES[cur.from] ?? SCENES[0];
-      const b = SCENES[cur.to] ?? a;
-      const k = cur.mix;
-      for (let i = 0; i < 5; i++) for (let j = 0; j < 3; j++) pal[i * 3 + j] = lerp(a.pal[i][j], b.pal[i][j], k);
-      gl.uniform3fv(U.pal, pal);
-      gl.uniform1f(U.angle, lerp(a.angle, b.angle, k));
-      gl.uniform1f(U.density, lerp(a.density, b.density, k));
-      gl.uniform2f(U.focus, lerp(a.focus[0], b.focus[0], k), lerp(a.focus[1], b.focus[1], k));
+      gl.uniform3fv(U.pal, cur.pal);
+      gl.uniform1f(U.angle, cur.angle);
+      gl.uniform1f(U.density, cur.density);
+      gl.uniform2f(U.focus, cur.focus[0], cur.focus[1]);
       gl.uniform1f(U.time, time);
       gl.uniform1f(U.drift, drift);
       gl.uniform1f(U.vel, reduced ? 0 : vel);

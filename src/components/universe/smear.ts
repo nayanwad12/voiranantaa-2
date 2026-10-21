@@ -49,10 +49,10 @@ void main() {
   vec2 r = vec2(fbm(p * 1.5 + 3.2 * q + vec2(1.7, 9.2) + t * 1.4), fbm(p * 1.5 + 3.2 * q + vec2(8.3, 2.8) - t));
 
   // Motion blur: noise stretched along the direction of travel.
-  float stretch = 9.0 + abs(uVel) * 16.0;
+  float stretch = 9.0 + abs(uVel) * 4.0;
   vec2 s = rot(uAngle) * (p + r * 0.4);
-  float streak = fbm(vec2(s.x * 0.55, s.y * stretch) + vec2(t * 3.5 + uDrift * 0.35, 0.0));
-  float streak2 = fbm(vec2(s.x * 0.9, s.y * stretch * 1.6) + vec2(-t * 2.0 + uDrift * 0.2, 4.0));
+  float streak = fbm(vec2(s.x * 0.55, s.y * stretch) + vec2(t * 3.5 + uDrift * 0.12, 0.0));
+  float streak2 = fbm(vec2(s.x * 0.9, s.y * stretch * 1.6) + vec2(-t * 2.0 + uDrift * 0.07, 4.0));
 
   float field = fbm(p * 0.9 + 2.6 * r);
 
