@@ -126,22 +126,22 @@ export function HowToParticipate() {
       <div className="ht-stage page-x mx-auto grid min-h-[100svh] max-w-page items-center gap-10 py-24 md:grid-cols-[1fr_1.1fr] md:gap-16">
         <div>
           <p className="label mb-6 text-mute">How to participate</p>
-          <h2 className="font-display text-[clamp(2.8rem,6vw,6rem)] font-bold uppercase leading-[0.86]">
+          <h2 className="veil font-display text-[clamp(2.8rem,6vw,6rem)] font-bold uppercase leading-[0.86]">
             Participant registration journey.
           </h2>
-          <p aria-hidden="true" className="ht-num mt-6 hidden font-display text-[clamp(8rem,18vw,16rem)] font-bold leading-none text-blue md:block">
+          <p aria-hidden="true" className="ht-num veil-warm mt-6 hidden font-display text-[clamp(8rem,18vw,16rem)] font-bold leading-none md:block">
             01
           </p>
         </div>
         <div className="relative">
           <span aria-hidden="true" className="absolute bottom-0 left-[0.55rem] top-0 hidden w-px bg-white/12 md:block" />
-          <span aria-hidden="true" className="ht-bar absolute bottom-0 left-[0.55rem] top-0 hidden w-px origin-top scale-y-0 bg-blue md:block" />
+          <span aria-hidden="true" className="ht-bar absolute bottom-0 left-[0.55rem] top-0 hidden w-px origin-top scale-y-0 bg-mustard md:block" />
           <ol className="grid gap-2">
             {STEPS.map((s, i) => (
               <li key={s.title} className="ht-step group relative rounded-2xl py-4 pl-10 pr-4 transition-colors duration-500">
                 <span
                   aria-hidden="true"
-                  className="absolute left-0 top-6 h-[1.15rem] w-[1.15rem] rounded-full border border-white/30 bg-black transition-colors duration-500 group-[.is-active]:border-blue group-[.is-active]:bg-blue group-[.is-done]:border-blue"
+                  className="absolute left-0 top-6 h-[1.15rem] w-[1.15rem] rounded-full border border-white/30 bg-black transition-colors duration-500 group-[.is-active]:border-mustard group-[.is-active]:bg-mustard group-[.is-done]:border-mustard"
                 />
                 <p className="font-sans text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-mute">Step {String(i + 1).padStart(2, "0")}</p>
                 <h3 className="mt-1 font-display text-[clamp(1.8rem,3vw,2.8rem)] font-bold uppercase leading-none text-paper/45 transition-colors duration-500 group-[.is-active]:text-paper group-[.is-done]:text-paper/70">
@@ -158,7 +158,7 @@ export function HowToParticipate() {
 
       <div className="page-x mx-auto max-w-page pb-10">
         <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
-          <h3 className="font-display text-[clamp(2.2rem,4.5vw,4.2rem)] font-bold uppercase leading-[0.9]">
+          <h3 className="veil font-display text-[clamp(2.2rem,4.5vw,4.2rem)] font-bold uppercase leading-[0.9]">
             What the application asks for.
           </h3>
           <p className="max-w-sm text-sm text-mute">
@@ -171,7 +171,7 @@ export function HowToParticipate() {
               key={f.title}
               className={cx(
                 "ht-col rounded-[1.4rem] p-7",
-                i === 0 ? "bg-paper text-black" : i === 1 ? "bg-blue text-black" : "border border-white/15 bg-night",
+                i === 0 ? "bg-mustard text-black" : i === 1 ? "bg-navy text-paper" : "bg-teal text-paper",
               )}
             >
               <p className="font-sans text-[0.68rem] font-semibold uppercase tracking-[0.22em] opacity-70">Step {String(i + 1).padStart(2, "0")}</p>
@@ -201,7 +201,7 @@ export function HowToParticipate() {
       <div className="page-x mx-auto grid max-w-page gap-10 py-24 md:grid-cols-[0.8fr_1.4fr] md:gap-20">
         <div>
           <p className="label mb-6 text-mute">Rules &amp; guidelines</p>
-          <h3 className="font-display text-[clamp(2.4rem,5vw,4.6rem)] font-bold uppercase leading-[0.88]">The fine print, plainly.</h3>
+          <h3 className="veil font-display text-[clamp(2.4rem,5vw,4.6rem)] font-bold uppercase leading-[0.88]">The fine print, plainly.</h3>
           <p className="mt-6 max-w-sm text-sm text-mute">
             Final rules, terms and policies are published before registration opens. Nothing here should be read as final until then.
           </p>
@@ -209,7 +209,7 @@ export function HowToParticipate() {
         <div className="border-t border-white/15">
           {RULES.map((r) => (
             <details key={r.q} className="rule group border-b border-white/15">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-6 font-display text-[clamp(1.4rem,2.4vw,2.1rem)] font-bold uppercase leading-tight transition-colors hover:text-blue [&::-webkit-details-marker]:hidden">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-6 font-display text-[clamp(1.4rem,2.4vw,2.1rem)] font-bold uppercase leading-tight transition-colors hover:text-mustard [&::-webkit-details-marker]:hidden">
                 {r.q}
                 <span aria-hidden="true" className="relative h-4 w-4 shrink-0">
                   <span className="absolute left-0 top-1/2 h-px w-4 bg-current" />

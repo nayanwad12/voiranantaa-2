@@ -44,10 +44,12 @@ export function Gate({
       <p className="gate-meta label mb-6 text-mute">
         {String(index).padStart(2, "0")} — 05
       </p>
-      <p className="gate-word outline-type font-display text-[clamp(6rem,30vw,26rem)] font-bold uppercase leading-[0.8]">
+      <p
+        className={`gate-word ${["veil-warm", "veil-cool", "veil-olive", "veil-warm"][(index - 2) % 4]} font-display text-[clamp(6rem,30vw,26rem)] font-bold uppercase leading-[0.8]`}
+      >
         {name}
       </p>
-      <p className="gate-meta mt-8 font-sans text-sm font-semibold uppercase tracking-[0.3em] text-blue-soft">{subject}</p>
+      <p className="gate-meta mt-8 font-sans text-sm font-semibold uppercase tracking-[0.3em] text-sand">{subject}</p>
     </section>
   );
 }

@@ -6,9 +6,9 @@ import { cx } from "@/lib/cx";
 import { gsap, useSectionMotion } from "./motion";
 
 const CARDS = [
-  { title: "The work", body: "The wearable artwork.", tone: "bg-paper text-black" },
-  { title: "The idea", body: "What the work communicates.", tone: "bg-blue text-black" },
-  { title: "The experience", body: "How it comes alive.", tone: "bg-night text-paper border border-white/15" },
+  { title: "The work", body: "The wearable artwork.", tone: "bg-mustard text-black" },
+  { title: "The idea", body: "What the work communicates.", tone: "bg-navy text-paper" },
+  { title: "The experience", body: "How it comes alive.", tone: "bg-crimson text-paper" },
 ];
 
 const fmt = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
@@ -71,11 +71,11 @@ export function Live() {
       <div className="live-stage page-x mx-auto grid min-h-[100svh] max-w-page items-center gap-10 py-24 md:grid-cols-[1fr_1fr] md:gap-16">
         <div>
           <p className="label mb-6 text-mute">Live experience</p>
-          <h2 className="font-display text-[clamp(2.6rem,5.6vw,5.6rem)] font-bold uppercase leading-[0.88]">
+          <h2 className="veil font-display text-[clamp(2.6rem,5.6vw,5.6rem)] font-bold uppercase leading-[0.88]">
             The garment is only half the story.
           </h2>
           <p
-            className="live-clock mt-8 font-display text-[clamp(5.5rem,15vw,13rem)] font-bold leading-none tabular-nums text-blue"
+            className="live-clock veil-warm mt-8 font-display text-[clamp(5.5rem,15vw,13rem)] font-bold leading-none tabular-nums"
             aria-label={`${edition.live.minutes} minutes`}
           >
             {fmt(edition.live.minutes * 60)}

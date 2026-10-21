@@ -11,7 +11,7 @@ export function Stepper({ steps, current }: { steps: string[]; current: number }
               aria-hidden="true"
               className={cx(
                 "h-[2px] w-full transition-colors duration-500",
-                state === "todo" ? "bg-line" : state === "current" ? "bg-blue" : "bg-blue-soft/60",
+                state === "todo" ? "bg-line" : state === "current" ? "bg-mustard" : "bg-mustard/60",
               )}
             />
             <span
@@ -20,7 +20,7 @@ export function Stepper({ steps, current }: { steps: string[]; current: number }
                 state === "todo" ? "text-mute" : "text-paper",
               )}
             >
-              <span className="text-blue-soft">{String(i + 1).padStart(2, "0")}</span>
+              <span className="text-sand">{String(i + 1).padStart(2, "0")}</span>
               <span className="hidden sm:inline"> / {title}</span>
               <span className="sr-only sm:hidden"> {title}</span>
               <span className="sr-only">{state === "done" ? " (completed)" : state === "current" ? " (current step)" : ""}</span>

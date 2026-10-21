@@ -24,7 +24,7 @@ export function RasaGallery() {
     <section ref={ref} data-form="3" data-element="1" className="relative py-16 md:py-20">
       <div className="page-x mx-auto max-w-page">
         <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-          <h2 className="font-display text-[clamp(1.8rem,3vw,2.6rem)] font-bold uppercase leading-none">The nine rasas</h2>
+          <h2 className="veil font-display text-[clamp(1.8rem,3vw,2.6rem)] font-bold uppercase leading-none">The nine rasas</h2>
           <p className="max-w-md text-sm text-mute">Interpret one — or a considered relationship between several.</p>
         </div>
         <ol className="rasa-list grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-9">

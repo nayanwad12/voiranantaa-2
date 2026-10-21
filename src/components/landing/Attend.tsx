@@ -47,7 +47,7 @@ export function Attend() {
         <h2 className="at-h font-display text-[clamp(3.2rem,9vw,9rem)] font-bold uppercase leading-[0.84]">
           {["Come see what", "art can become."].map((l) => (
             <span key={l} className="block overflow-hidden pb-[0.04em]">
-              <span className="w-c inline-block">{l}</span>
+              <span className="w-c veil inline-block">{l}</span>
             </span>
           ))}
         </h2>
@@ -76,7 +76,7 @@ export function Attend() {
           </dl>
 
           <div className="at-form rounded-[1.6rem] border border-white/12 bg-night/80 p-6 backdrop-blur-xl md:p-10">
-            <p className="label mb-2 text-blue">Visitor registration</p>
+            <p className="label mb-2 text-mustard">Visitor registration</p>
             <h3 className="mb-8 font-display text-4xl font-bold uppercase leading-none">Register your interest</h3>
             <VisitorForm />
           </div>

@@ -46,12 +46,12 @@ export function NewsletterForm() {
           placeholder="Your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="min-w-0 flex-1 rounded-lg border border-line bg-ink/60 px-4 py-3 font-sans text-paper placeholder:text-mute/70 focus:border-blue focus:outline-none"
+          className="min-w-0 flex-1 rounded-lg border border-line bg-ink/60 px-4 py-3 font-sans text-paper placeholder:text-mute/70 focus:border-mustard focus:outline-none"
         />
         <button
           type="submit"
           disabled={state.status === "sending"}
-          className="bg-blue px-6 py-3 font-sans text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-ink transition-colors hover:bg-paper disabled:opacity-60"
+          className="bg-mustard px-6 py-3 font-sans text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-ink transition-colors hover:bg-paper disabled:opacity-60"
         >
           {state.status === "sending" ? "Sending…" : "Subscribe"}
         </button>

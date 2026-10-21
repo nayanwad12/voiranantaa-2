@@ -58,14 +58,14 @@ export function FileDrop({
         }}
         className={cx(
           "flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed px-6 py-10 text-center transition-colors",
-          drag ? "border-blue bg-blue/10" : error ? "border-red" : "border-line bg-ink/40",
+          drag ? "border-mustard bg-mustard/10" : error ? "border-red" : "border-line bg-ink/40",
         )}
       >
         <p className="text-paper">Drag files here, or</p>
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="border border-line px-5 py-2.5 font-sans text-[0.72rem] font-semibold uppercase tracking-[0.16em] hover:border-blue"
+          className="border border-line px-5 py-2.5 font-sans text-[0.72rem] font-semibold uppercase tracking-[0.16em] hover:border-mustard"
         >
           Choose files
         </button>
@@ -94,7 +94,7 @@ export function FileDrop({
                 <button
                   type="button"
                   onClick={() => onChange(files.filter((_, j) => j !== i))}
-                  className="text-blue-soft underline-offset-4 hover:underline"
+                  className="text-sand underline-offset-4 hover:underline"
                   aria-label={`Remove ${f.name}`}
                 >
                   Remove

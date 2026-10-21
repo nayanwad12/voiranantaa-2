@@ -37,19 +37,19 @@ export function Idea() {
       <div className="idea-stage page-x mx-auto grid min-h-[100svh] max-w-page place-items-center gap-10 py-24 text-center [perspective:1000px]">
         <div className="idea-not relative">
           <p className="font-display text-[clamp(3rem,10.5vw,10rem)] font-bold uppercase leading-[0.88]">
-            {words("This is not")}
+            {words("This is not", "w veil")}
             <br />
             <span className="relative inline-block">
-              {words("a fashion show.")}
+              {words("a fashion show.", "w veil")}
               <span aria-hidden="true" className="idea-strike absolute left-[-2%] top-1/2 h-[3px] w-[104%] origin-left bg-red" />
             </span>
           </p>
         </div>
         <div className="idea-is">
           <p className="font-display text-[clamp(3.4rem,12.5vw,12rem)] font-bold uppercase leading-[0.86]">
-            {words("This is")}
+            {words("This is", "w veil")}
             <br />
-            <span className="text-blue">{words("wearable art.")}</span>
+            <span>{words("wearable art.", "w veil-warm")}</span>
           </p>
           <p className="idea-tail mx-auto mt-10 max-w-xl text-lg font-light leading-relaxed text-paper/80">
             Emotion, translated into form, material, construction and performance — and brought to life on stage.

@@ -26,7 +26,7 @@ export function Connect() {
       <div className="page-x mx-auto grid max-w-page gap-8 py-28 md:grid-cols-[1fr_1.2fr] md:gap-20 md:py-36">
         <div className="cn-in">
           <p className="label mb-6 text-mute">About {site.publisher}</p>
-          <h2 className="font-display text-[clamp(2.6rem,5.5vw,5.5rem)] font-bold uppercase leading-[0.88]">
+          <h2 className="veil font-display text-[clamp(2.6rem,5.5vw,5.5rem)] font-bold uppercase leading-[0.88]">
             The world behind {site.name}.
           </h2>
         </div>
@@ -45,7 +45,7 @@ export function Connect() {
       <div className="page-x mx-auto grid max-w-page gap-12 pb-28 md:grid-cols-[1fr_1.3fr] md:gap-20">
         <div className="cn-in">
           <p className="label mb-6 text-mute">Contact</p>
-          <h2 className="font-display text-[clamp(2.6rem,5.5vw,5.5rem)] font-bold uppercase leading-[0.88]">Say hello to the infinite.</h2>
+          <h2 className="veil font-display text-[clamp(2.6rem,5.5vw,5.5rem)] font-bold uppercase leading-[0.88]">Say hello to the infinite.</h2>
           <dl className="mt-10 grid gap-6 border-t border-white/15 pt-8">
             <div>
               <dt className="label mb-1 text-mute">General</dt>
@@ -58,7 +58,7 @@ export function Connect() {
             <div>
               <dt className="label mb-1 text-mute">Follow</dt>
               <dd>
-                <a href={site.socials[0].href} target="_blank" rel="noreferrer" className="text-lg hover:text-blue">
+                <a href={site.socials[0].href} target="_blank" rel="noreferrer" className="text-lg hover:text-mustard">
                   Instagram ↗
                 </a>
               </dd>

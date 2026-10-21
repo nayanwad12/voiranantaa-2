@@ -9,6 +9,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
 import { Universe } from "@/components/universe/Universe";
+import { Grain } from "@/components/universe/Grain";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to content
         </a>
         <Universe />
+        <Grain />
         <SmoothScroll />
         <Header />
         {children}

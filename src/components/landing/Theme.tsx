@@ -50,13 +50,13 @@ export function Theme() {
       <h2 className="sr-only">Infinite Raga — a melody with no end</h2>
       <div aria-hidden="true" className="select-none whitespace-nowrap font-display font-bold uppercase leading-[0.85]">
         <p className="theme-row-a outline-type whitespace-nowrap text-[clamp(5rem,17vw,16rem)]">{rowA}</p>
-        <p className="theme-row-b whitespace-nowrap text-[clamp(5rem,17vw,16rem)] text-blue">{rowB}</p>
+        <p className="theme-row-b veil-warm whitespace-nowrap text-[clamp(5rem,17vw,16rem)]">{rowB}</p>
       </div>
 
       <div className="theme-pin page-x mx-auto flex min-h-[100svh] max-w-page flex-col justify-center py-16">
         <p className="label mb-8 text-mute">The theme · Edition 01</p>
         <p className="theme-statement max-w-6xl font-display text-[clamp(2.4rem,6.4vw,6.2rem)] font-bold uppercase leading-[0.95]">
-          {words(STATEMENT)}
+          {words(STATEMENT, "w veil")}
         </p>
       </div>
 

@@ -6,9 +6,9 @@ type Variant = "primary" | "ghost" | "text";
 
 const styles: Record<Variant, string> = {
   primary:
-    "bg-blue text-ink hover:bg-paper focus-visible:bg-paper px-6 py-3.5 shadow-[0_0_40px_-10px_var(--blue)]",
-  ghost: "border border-line text-paper hover:border-blue hover:text-blue px-6 py-3.5",
-  text: "text-blue-soft hover:text-paper px-0 py-2 underline-offset-8 hover:underline",
+    "bg-mustard text-ink hover:bg-paper focus-visible:bg-paper px-6 py-3.5 shadow-[0_0_40px_-10px_var(--blue)]",
+  ghost: "border border-line text-paper hover:border-mustard hover:text-mustard px-6 py-3.5",
+  text: "text-sand hover:text-paper px-0 py-2 underline-offset-8 hover:underline",
 };
 
 const base =

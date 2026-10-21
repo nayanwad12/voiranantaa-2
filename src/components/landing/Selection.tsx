@@ -62,7 +62,7 @@ export function Selection() {
       <span id="selection" aria-hidden="true" className="block h-0" />
       <div className="page-x mx-auto max-w-page">
         <p className="label mb-6 text-mute">Selection process</p>
-        <h2 className="max-w-5xl font-display text-[clamp(2.8rem,7vw,7rem)] font-bold uppercase leading-[0.86]">
+        <h2 className="veil max-w-5xl font-display text-[clamp(2.8rem,7vw,7rem)] font-bold uppercase leading-[0.86]">
           {edition.selection.totalFinalists} finalists. Two category winners.
         </h2>
 
@@ -73,8 +73,8 @@ export function Selection() {
             { n: edition.selection.winners, label: "Winners", sub: "One per category", accent: true },
           ].map((s) => (
             <div key={s.sub} className="bg-black p-8">
-              <p className={`font-display text-[clamp(6rem,12vw,10rem)] font-bold leading-none ${s.accent ? "text-blue" : ""}`}>
-                <span className="sel-n" data-to={s.n}>
+              <p className="font-display text-[clamp(6rem,12vw,10rem)] font-bold leading-none">
+                <span className={`sel-n ${s.accent ? "veil-warm" : "veil"}`} data-to={s.n}>
                   {String(s.n).padStart(2, "0")}
                 </span>
               </p>
@@ -87,11 +87,11 @@ export function Selection() {
         <div className="sel-journey relative mt-20">
           <p className="label mb-8 text-mute">Selection journey</p>
           <span aria-hidden="true" className="absolute left-0 right-0 top-[3.6rem] hidden h-px bg-white/12 md:block" />
-          <span aria-hidden="true" className="sel-line absolute left-0 right-0 top-[3.6rem] hidden h-px origin-left bg-blue md:block" />
+          <span aria-hidden="true" className="sel-line absolute left-0 right-0 top-[3.6rem] hidden h-px origin-left bg-mustard md:block" />
           <ol className="grid gap-8 md:grid-cols-5 md:gap-6">
             {edition.selection.journey.map((step, i) => (
               <li key={step} className="sel-stage relative pt-8">
-                <span aria-hidden="true" className="absolute left-0 top-[0.35rem] h-2.5 w-2.5 rounded-full bg-blue md:top-[0.45rem]" />
+                <span aria-hidden="true" className="absolute left-0 top-[0.35rem] h-2.5 w-2.5 rounded-full bg-mustard md:top-[0.45rem]" />
                 <p className="font-sans text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-mute">{String(i + 1).padStart(2, "0")}</p>
                 <p className="mt-2 font-display text-2xl font-bold uppercase leading-tight">{step}</p>
               </li>
@@ -102,7 +102,7 @@ export function Selection() {
         <span id="judging" aria-hidden="true" className="block h-0" />
         <div className="mt-28">
           <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
-            <h3 className="font-display text-[clamp(2.4rem,5.5vw,5.4rem)] font-bold uppercase leading-[0.88]">
+            <h3 className="veil font-display text-[clamp(2.4rem,5.5vw,5.4rem)] font-bold uppercase leading-[0.88]">
               Six lenses.
               <br />
               One complete work.
@@ -139,7 +139,7 @@ export function Selection() {
         <div className="mt-28 grid gap-10 md:grid-cols-[1fr_1fr] md:gap-20">
           <div>
             <p className="label mb-6 text-mute">The judges</p>
-            <h3 className="font-display text-[clamp(2.4rem,5.5vw,5.4rem)] font-bold uppercase leading-[0.88]">
+            <h3 className="veil font-display text-[clamp(2.4rem,5.5vw,5.4rem)] font-bold uppercase leading-[0.88]">
               Meet the eyes behind {site.name}.
             </h3>
             <p className="mt-6 max-w-md text-lg font-light leading-relaxed text-paper/80">
@@ -152,7 +152,7 @@ export function Selection() {
           </div>
           <ul className="persp-wrap grid content-center gap-1" aria-label="Perspectives on the panel">
             {PERSPECTIVES.map((p) => (
-              <li key={p} className="persp font-display text-[clamp(2.8rem,6.5vw,6rem)] font-bold uppercase leading-[0.92]">
+              <li key={p} className="persp veil font-display text-[clamp(2.8rem,6.5vw,6rem)] font-bold uppercase leading-[0.92]">
                 {p}
               </li>
             ))}

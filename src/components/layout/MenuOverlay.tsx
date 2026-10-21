@@ -71,9 +71,9 @@ export function MenuOverlay({ open, onClose }: { open: boolean; onClose: () => v
                   <a
                     href={item.href}
                     onClick={onClose}
-                    className="group flex items-baseline gap-5 py-1 font-display text-[clamp(1.9rem,4.4vw,3.4rem)] font-bold uppercase leading-[1.02] text-paper transition-colors hover:text-blue"
+                    className="group flex items-baseline gap-5 py-1 font-display text-[clamp(1.9rem,4.4vw,3.4rem)] font-bold uppercase leading-[1.02] text-paper transition-colors hover:text-mustard"
                   >
-                    <span className="label w-6 shrink-0 text-mute group-hover:text-blue">{String(i + 1).padStart(2, "0")}</span>
+                    <span className="label w-6 shrink-0 text-mute group-hover:text-mustard">{String(i + 1).padStart(2, "0")}</span>
                     {item.label}
                   </a>
                 </li>

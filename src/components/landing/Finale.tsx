@@ -30,9 +30,9 @@ export function Finale() {
   });
 
   const tiles = [
-    { href: "#participate", label: "Participate", note: "Designers, artists, makers and students", tone: "bg-blue text-black" },
-    { href: "#partners", label: "Partner", note: "Brands, institutions and collaborators", tone: "bg-paper text-black" },
-    { href: "#attend", label: "Attend", note: "Register your interest in the live show", tone: "border border-white/20 text-paper" },
+    { href: "#participate", label: "Participate", note: "Designers, artists, makers and students", tone: "bg-crimson text-paper" },
+    { href: "#partners", label: "Partner", note: "Brands, institutions and collaborators", tone: "bg-mustard text-black" },
+    { href: "#attend", label: "Attend", note: "Register your interest in the live show", tone: "bg-navy text-paper" },
   ];
 
   return (
@@ -45,7 +45,7 @@ export function Finale() {
           {QUESTION.split(" ").map((w, wi) => (
             <span key={wi} aria-hidden="true" className="inline-block whitespace-nowrap">
               {w.split("").map((ch, i) => (
-                <span key={i} className="fin-l inline-block">
+                <span key={i} className={`fin-l inline-block ${(wi + i) % 3 === 0 ? "veil-warm" : (wi + i) % 3 === 1 ? "veil" : "veil-cool"}`}>
                   {ch}
                 </span>
               ))}
@@ -71,7 +71,7 @@ export function Finale() {
             </li>
           ))}
         </ul>
-        <p className="mt-10 text-center font-sans text-xs font-semibold uppercase tracking-[0.3em] text-blue">{site.tagline}</p>
+        <p className="mt-10 text-center font-sans text-xs font-semibold uppercase tracking-[0.3em] text-mustard">{site.tagline}</p>
       </div>
     </section>
   );

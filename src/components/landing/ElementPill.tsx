@@ -38,13 +38,13 @@ export function ElementPill() {
 
   return (
     <>
-      <div aria-hidden="true" className="fixed inset-x-0 top-0 z-50 h-[2px] origin-left bg-blue" style={{ transform: `scaleX(${progress})` }} />
+      <div aria-hidden="true" className="fixed inset-x-0 top-0 z-50 h-[2px] origin-left bg-mustard" style={{ transform: `scaleX(${progress})` }} />
       <nav
         aria-label="Elements"
         className="fixed bottom-6 left-1/2 z-40 hidden -translate-x-1/2 items-center gap-3 rounded-full border border-white/10 bg-black/60 px-4 py-2 backdrop-blur-xl md:flex"
       >
         <p className="w-[5.5rem] font-sans text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-paper" aria-live="polite">
-          <span className="tabular-nums text-blue">{String(active + 1).padStart(2, "0")}</span> {ELEMENTS[active]}
+          <span className="tabular-nums text-mustard">{String(active + 1).padStart(2, "0")}</span> {ELEMENTS[active]}
         </p>
         <ol className="flex items-center gap-1.5">
           {ELEMENTS.map((name, i) => (
@@ -52,7 +52,7 @@ export function ElementPill() {
               <span className="sr-only">{name}</span>
               <span
                 aria-hidden="true"
-                className={cx("block h-[3px] rounded-full transition-all duration-500", active === i ? "w-6 bg-blue" : i < active ? "w-2 bg-paper/60" : "w-2 bg-paper/20")}
+                className={cx("block h-[3px] rounded-full transition-all duration-500", active === i ? "w-6 bg-mustard" : i < active ? "w-2 bg-paper/60" : "w-2 bg-paper/20")}
               />
             </li>
           ))}

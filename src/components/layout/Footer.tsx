@@ -39,12 +39,12 @@ export function Footer() {
         <div className="mt-24">
           <p
             aria-hidden="true"
-            className="select-none font-display text-[clamp(3.4rem,15.5vw,16rem)] font-bold uppercase leading-[0.8] tracking-[0.01em] text-paper"
+            className="veil-warm select-none font-display text-[clamp(3.4rem,15.5vw,16rem)] font-bold uppercase leading-[0.8] tracking-[0.01em]"
           >
             {site.name}
           </p>
           <div className="mt-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-            <p className="label text-blue">{site.tagline}</p>
+            <p className="label text-mustard">{site.tagline}</p>
             <p className="font-sans text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-paper">
               An annual initiative by {site.publisher}
             </p>

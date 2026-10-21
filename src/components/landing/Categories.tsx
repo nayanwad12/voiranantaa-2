@@ -44,8 +44,8 @@ export function Categories() {
           <article
             key={cat.id}
             className={cx(
-              "cat-panel relative flex min-h-[100svh] flex-col justify-between p-[var(--gutter)] pt-[calc(var(--header-h)+2rem)] text-black md:min-h-0",
-              i === 0 ? "bg-blue" : "bg-paper",
+              "cat-panel relative flex min-h-[100svh] flex-col justify-between p-[var(--gutter)] pt-[calc(var(--header-h)+2rem)] md:min-h-0",
+              i === 0 ? "bg-navy text-paper" : "bg-mustard text-black",
             )}
           >
             <div className="cat-in flex items-center justify-between font-sans text-[0.7rem] font-semibold uppercase tracking-[0.22em]">
@@ -63,7 +63,7 @@ export function Categories() {
               <p className="cat-in mt-6 max-w-md text-lg leading-relaxed">{cat.summary}</p>
               <ul className="cat-in mt-6 flex max-w-lg flex-wrap gap-2">
                 {cat.lenses.map((l) => (
-                  <li key={l} className="rounded-full border border-black/30 px-3 py-1 font-sans text-[0.7rem] font-semibold uppercase tracking-[0.14em]">
+                  <li key={l} className="rounded-full border border-[color:color-mix(in_srgb,currentColor_30%,transparent)] px-3 py-1 font-sans text-[0.7rem] font-semibold uppercase tracking-[0.14em]">
                     {l}
                   </li>
                 ))}

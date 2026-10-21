@@ -58,14 +58,21 @@ export function Hero() {
             className="font-display text-[clamp(3.7rem,16.4vw,17.5rem)] font-bold leading-[0.8] [perspective:900px]"
           >
             <span className="block overflow-hidden pb-[0.04em]" aria-hidden="true">
-              {site.name.split("").map((ch, i) => (
-                <span key={i} className="hero-l inline-block will-change-transform">
+              {site.name.split("").map((ch, i, all) => (
+                <span
+                  key={i}
+                  className="hero-l veil-warm inline-block will-change-transform"
+                  style={{
+                    backgroundSize: `140px 140px, ${all.length * 100}% 100%`,
+                    backgroundPosition: `0 0, ${(i / (all.length - 1)) * 100}% 0`,
+                  }}
+                >
                   {ch}
                 </span>
               ))}
             </span>
           </h1>
-          <p className="hero-tag hero-fade mt-5 font-sans text-[clamp(0.8rem,1.6vw,1.25rem)] font-semibold uppercase tracking-[0.55em] text-blue">
+          <p className="hero-tag hero-fade mt-5 font-sans text-[clamp(0.8rem,1.6vw,1.25rem)] font-semibold uppercase tracking-[0.55em] text-mustard">
             {site.tagline}
           </p>
         </div>

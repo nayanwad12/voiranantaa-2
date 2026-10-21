@@ -2,13 +2,13 @@
 
 Website for **VOIRANANTAA Edition 01 / Infinite Raga**, a wearable-art competition and live experience by VOIRTALES.
 
-Everything lives on **one landing page**: a single descent through a night-time universe, **Sky → Air → Space → Water → Earth**. A 3D particle universe behind the page re-forms into a new shape for each chapter. The nav bar and menu scroll to sections of the page. The forms open in place: the participant application in a full-screen layer, and the partner, visitor, contact and newsletter forms inline.
+Everything lives on **one landing page**: a single descent through a night-time universe, **Sky → Air → Space → Water → Earth**. Behind the page, smeared colour drifts through jet black like a long exposure of a moving body. Each chapter has its own colour mix, scroll speed stretches the motion blur, and film grain sits over everything. The nav bar and menu scroll to sections of the page. The forms open in place: the participant application in a full-screen layer, and the partner, visitor, contact and newsletter forms inline.
 
 ## Stack
 
 - **Next.js 15** (App Router, TypeScript), **Tailwind CSS 3**
 - **Lenis** for smooth scrolling, **GSAP ScrollTrigger** for pinned scenes and scroll-linked motion
-- **Three.js** for the particle universe (`src/components/universe/`)
+- A **WebGL** smear shader for the background and a CSS film-grain overlay (`src/components/universe/`)
 - **react-hook-form** + **zod** forms. The same schemas validate in the browser and in the API routes.
 - Self-hosted fonts: **Barlow Condensed** (stand-in for DIN Condensed) and **Montserrat**
 
@@ -45,7 +45,7 @@ The normal `npm run build` is unchanged by this.
 | Dates, fees, venue, status flags | `src/content/edition.ts` |
 | Rasas, categories, rules, criteria, partner tiers, timeline | `src/content/*.ts` |
 | Colour and type tokens | `src/app/globals.css` (`:root`) + `tailwind.config.ts` |
-| Particle universe (shapes per chapter) | `src/components/universe/` |
+| Background smear field (mood per chapter) + grain | `src/components/universe/` |
 | Landing page order and section anchors | `src/app/page.tsx` |
 | Landing sections | `src/components/landing/` |
 | Forms + validation | `src/components/forms/`, `src/lib/schemas.ts` |
@@ -68,7 +68,8 @@ All copy that is expected to change lives in `src/content/`. These files are typ
 
 - The name is always the complete **VOIRANANTAA**: never split, never abbreviated, always with the double A. The Edition 01 deck's "VOIR ANANTA" was normalised to this.
 - Tagline: **TO SEE THE INFINITE**.
-- Black and blue lead and white gives clarity. Red, neon green and pink appear only as fine lines, accent bars, a light trail and mineral glints.
+- Jet black base with smeared colour. The five swatches (navy `#003E76`, mustard `#E2BE22`, olive `#6E9D00`, red `#E31F14`, teal `#39664E`) colour the blocks and accents.
+- Headings are translucent and grainy (`.veil`, `.veil-warm`, `.veil-cool`, `.veil-olive` in `globals.css`): light passes through the letters.
 - One gradient banner, used for one statement only: "One theme. Nine emotional worlds. Infinite interpretations."
 - The five cosmic elements organise the site. The nine rasas appear only as theme content (the rasa gallery and the form), never as the site structure.
 

@@ -76,8 +76,8 @@ export function Challenge() {
           <div>
             <p className="label mb-4 text-mute">The challenge</p>
             <p className="font-display font-bold leading-[0.78]">
-              <span className="ch-count text-[clamp(9rem,30vw,26rem)]">95</span>
-              <span className="text-[clamp(4rem,12vw,10rem)] text-blue">%</span>
+              <span className="ch-count veil-warm text-[clamp(9rem,30vw,26rem)]">95</span>
+              <span className="text-[clamp(4rem,12vw,10rem)] text-mustard">%</span>
             </p>
             <p className="mt-2 font-sans text-sm font-semibold uppercase tracking-[0.24em]">Unconventional material</p>
             <p className="mt-3 max-w-md text-sm text-mute md:hidden">Paper · metal · wire · wood · found objects · natural · recycled · experimental</p>
@@ -103,7 +103,7 @@ export function Challenge() {
       </div>
       <div className="page-x mx-auto max-w-page pb-32 pt-10">
         <p className="ch-statement max-w-6xl font-display text-[clamp(2.2rem,5.6vw,5.4rem)] font-bold uppercase leading-[0.95]">
-          {words(STATEMENT)}
+          {words(STATEMENT, "w veil")}
         </p>
       </div>
     </section>

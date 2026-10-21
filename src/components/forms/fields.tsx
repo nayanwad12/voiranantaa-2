@@ -2,7 +2,7 @@ import type { ComponentProps, ReactNode } from "react";
 import { cx } from "@/lib/cx";
 
 const control =
-  "w-full rounded-lg border border-line bg-ink/60 px-4 py-3.5 font-sans text-[1rem] font-normal text-paper placeholder:text-mute/60 transition-colors focus:border-blue focus:outline-none aria-[invalid=true]:border-red";
+  "w-full rounded-lg border border-line bg-ink/60 px-4 py-3.5 font-sans text-[1rem] font-normal text-paper placeholder:text-mute/60 transition-colors focus:border-mustard focus:outline-none aria-[invalid=true]:border-red";
 
 type ShellProps = {
   id: string;
@@ -85,7 +85,7 @@ export function SelectField({
     <FieldShell id={id} label={label} hint={hint} error={error} optional={optional} className={className}>
       <select
         id={id}
-        className={cx(control, "appearance-none bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22><path d=%22M1 1l5 5 5-5%22 stroke=%22%238db8ff%22 fill=%22none%22/></svg>')] bg-[length:12px_8px] bg-[right_1rem_center] bg-no-repeat pr-10")}
+        className={cx(control, "appearance-none bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22><path d=%22M1 1l5 5 5-5%22 stroke=%22%23e2be22%22 fill=%22none%22/></svg>')] bg-[length:12px_8px] bg-[right_1rem_center] bg-no-repeat pr-10")}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy(id, error, hint)}
         defaultValue=""
@@ -117,7 +117,7 @@ export function CheckboxField({
         <input
           id={id}
           type="checkbox"
-          className="mt-1 h-4 w-4 shrink-0 cursor-pointer appearance-none rounded-[3px] border border-mute/60 bg-ink transition-colors checked:border-blue checked:bg-blue checked:bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 12 12%22><path d=%22M2.5 6.2l2.3 2.3 4.7-4.9%22 stroke=%22%2305070d%22 stroke-width=%221.8%22 fill=%22none%22/></svg>')] aria-[invalid=true]:border-red"
+          className="mt-1 h-4 w-4 shrink-0 cursor-pointer appearance-none rounded-[3px] border border-mute/60 bg-ink transition-colors checked:border-mustard checked:bg-mustard checked:bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 12 12%22><path d=%22M2.5 6.2l2.3 2.3 4.7-4.9%22 stroke=%22%2305070d%22 stroke-width=%221.8%22 fill=%22none%22/></svg>')] aria-[invalid=true]:border-red"
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? `${id}-error` : undefined}
           {...input}
@@ -165,14 +165,14 @@ export function ChoiceGroup({
         {options.map((o) => (
           <label
             key={o.value}
-            className="group relative flex cursor-pointer flex-col gap-1 rounded-lg border border-line bg-ink/50 px-4 py-3.5 transition-colors hover:border-blue-soft has-[:checked]:border-blue has-[:checked]:bg-blue/10 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-blue"
+            className="group relative flex cursor-pointer flex-col gap-1 rounded-lg border border-line bg-ink/50 px-4 py-3.5 transition-colors hover:border-mustard has-[:checked]:border-mustard has-[:checked]:bg-mustard/10 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-mustard"
           >
             <span className="flex items-center gap-3">
               <input type={type} value={o.value} className="peer sr-only" {...inputProps} />
               <span
                 aria-hidden="true"
                 className={cx(
-                  "h-3.5 w-3.5 shrink-0 border border-mute/70 transition-colors peer-checked:border-blue peer-checked:bg-blue",
+                  "h-3.5 w-3.5 shrink-0 border border-mute/70 transition-colors peer-checked:border-mustard peer-checked:bg-mustard",
                   type === "radio" ? "rounded-full" : "rounded-[3px]",
                 )}
               />

@@ -30,7 +30,7 @@ export function Partners() {
           <h2 className="pt-h font-display text-[clamp(3.2rem,8.5vw,8.5rem)] font-bold uppercase leading-[0.84]">
             {["Build the", "infinite", "with us."].map((l) => (
               <span key={l} className="block overflow-hidden pb-[0.04em]">
-                <span className="w-c inline-block">{l}</span>
+                <span className="w-c veil inline-block">{l}</span>
               </span>
             ))}
           </h2>
@@ -77,7 +77,7 @@ export function Partners() {
             <div className="overflow-hidden">
               <div className="mt-8 grid gap-10 rounded-[1.6rem] border border-white/12 bg-night/80 p-6 backdrop-blur-xl md:grid-cols-[0.7fr_1.6fr] md:p-10">
                 <div>
-                  <p className="label mb-2 text-blue">Partner enquiry</p>
+                  <p className="label mb-2 text-mustard">Partner enquiry</p>
                   <h3 className="font-display text-4xl font-bold uppercase leading-none">Tell us what you&rsquo;d bring.</h3>
                   <p className="mt-4 text-sm text-mute">We&rsquo;ll confirm by email and follow up personally.</p>
                 </div>

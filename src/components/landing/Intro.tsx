@@ -111,7 +111,7 @@ export function Intro() {
       <p className="intro-fade label absolute bottom-10 right-[var(--gutter)] text-mute opacity-0">Edition 01 / Infinite Raga</p>
       <span
         ref={countRef}
-        className="intro-count absolute bottom-6 left-[var(--gutter)] font-display text-[clamp(4rem,14vw,11rem)] font-bold leading-none tabular-nums"
+        className="intro-count veil-warm absolute bottom-6 left-[var(--gutter)] font-display text-[clamp(4rem,14vw,11rem)] font-bold leading-none tabular-nums"
       >
         000
       </span>

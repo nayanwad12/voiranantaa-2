@@ -76,7 +76,7 @@ export function Header() {
                       <span
                         aria-hidden="true"
                         className={cx(
-                          "absolute -bottom-2 left-0 h-px w-full origin-left bg-blue transition-transform duration-500",
+                          "absolute -bottom-2 left-0 h-px w-full origin-left bg-mustard transition-transform duration-500",
                           isActive ? "scale-x-100" : "scale-x-0",
                         )}
                       />
