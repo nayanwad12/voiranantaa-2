@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef } from "react";
-import Link from "next/link";
 import { site } from "@/content/site";
 import { edition } from "@/content/edition";
 import { gsap, useSectionMotion } from "./motion";
@@ -77,12 +76,12 @@ export function Hero() {
             {site.publisher}.
           </p>
           <div className="flex flex-wrap items-center gap-3">
-            <Link href="/participate" className="pill pill-solid">
+            <a href="#participate" className="pill pill-solid">
               Participate
-            </Link>
-            <Link href="/infinite-raga" className="pill">
+            </a>
+            <a href="#theme" className="pill">
               Explore the theme
-            </Link>
+            </a>
           </div>
         </div>
       </div>

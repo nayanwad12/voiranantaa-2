@@ -3,7 +3,6 @@
 import { useRef, useState } from "react";
 import { useForm, type FieldPath } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
 import { categories } from "@/content/categories";
 import { edition, formatINR } from "@/content/edition";
 import { rasas } from "@/content/rasas";
@@ -14,8 +13,8 @@ import {
   validateUploads,
   type ParticipantInput,
 } from "@/lib/schemas";
-import { lenisRef } from "@/components/motion/SmoothScroll";
-import { STATIC_PREVIEW, useNavigate } from "@/lib/preview";
+import { STATIC_PREVIEW } from "@/lib/preview";
+import { Confirmation } from "./Confirmation";
 import { Arrow, Button } from "@/components/ui/Button";
 import { CheckboxField, ChoiceGroup, SelectField, TextArea, TextField } from "./fields";
 import { FileDrop } from "./FileDrop";
@@ -27,7 +26,7 @@ import { useFormDraft } from "./useFormDraft";
 const DRAFT_KEY = "voiranantaa:participant-draft:v1";
 
 export function ParticipantForm() {
-  const navigate = useNavigate();
+  const [done, setDone] = useState<{ reference: string; fee: number; preview: boolean } | null>(null);
   const topRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const [step, setStep] = useState(0);
@@ -75,9 +74,7 @@ export function ParticipantForm() {
   const goTo = (next: number) => {
     setStep(next);
     requestAnimationFrame(() => {
-      const top = (topRef.current?.getBoundingClientRect().top ?? 0) + window.scrollY - 120;
-      if (lenisRef.current) lenisRef.current.scrollTo(top, { duration: 0.8 });
-      else window.scrollTo({ top });
+      topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       headingRef.current?.focus({ preventScroll: true });
     });
   };
@@ -104,12 +101,8 @@ export function ParticipantForm() {
     const res = await submitForm("/api/participant", body);
     if (res.ok) {
       clear();
-      navigate("/confirmation/participant", {
-        ref: res.reference,
-        fee: String(res.fee ?? fee),
-        payment: String(res.paymentStatus ?? "pending"),
-        ...(res.preview ? { preview: "1" } : {}),
-      });
+      setDone({ reference: res.reference, fee: Number(res.fee ?? fee), preview: Boolean(res.preview) });
+      requestAnimationFrame(() => topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
       return;
     }
     setServerError(res.message);
@@ -138,6 +131,14 @@ export function ParticipantForm() {
     const idx = participantSteps.findIndex((s) => s.fields.some((f) => f in errs));
     if (idx >= 0 && idx !== step) goTo(idx);
   };
+
+  if (done) {
+    return (
+      <div ref={topRef}>
+        <Confirmation kind="participant" reference={done.reference} fee={done.fee} preview={done.preview} />
+      </div>
+    );
+  }
 
   return (
     <div ref={topRef} className="grid gap-10">
@@ -301,13 +302,9 @@ export function ParticipantForm() {
               label={
                 <>
                   I accept the{" "}
-                  <Link href="/terms" target="_blank" className="text-blue-soft underline underline-offset-4">
-                    terms
-                  </Link>{" "}
+                  terms{" "}
                   and{" "}
-                  <Link href="/rules" target="_blank" className="text-blue-soft underline underline-offset-4">
-                    participation rules
-                  </Link>
+                  participation rules
                   , and understand that registration does not guarantee selection.
                 </>
               }
@@ -319,9 +316,7 @@ export function ParticipantForm() {
               label={
                 <>
                   I have read the{" "}
-                  <Link href="/privacy" target="_blank" className="text-blue-soft underline underline-offset-4">
-                    privacy notice
-                  </Link>{" "}
+                  privacy notice{" "}
                   and agree to my details being used to process this application.
                 </>
               }

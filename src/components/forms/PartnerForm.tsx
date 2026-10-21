@@ -1,19 +1,18 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { useForm, type FieldPath } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { partnerTiers } from "@/content/partners";
 import { partnerSchema, type PartnerInput } from "@/lib/schemas";
 import { Arrow, Button } from "@/components/ui/Button";
-import { useNavigate } from "@/lib/preview";
+import { Confirmation } from "./Confirmation";
 import { CheckboxField, ChoiceGroup, TextArea, TextField } from "./fields";
 import { FormAlert } from "./FormAlert";
 import { submitForm } from "./submit";
 
 export function PartnerForm() {
-  const navigate = useNavigate();
+  const [done, setDone] = useState<string>();
   const [serverError, setServerError] = useState<string>();
   const {
     register,
@@ -29,10 +28,12 @@ export function PartnerForm() {
   const onValid = async (values: PartnerInput) => {
     setServerError(undefined);
     const res = await submitForm("/api/partner", values);
-    if (res.ok) return navigate("/confirmation/partner", { ref: res.reference });
+    if (res.ok) return setDone(res.reference);
     setServerError(res.message);
     Object.entries(res.fieldErrors ?? {}).forEach(([k, v]) => setError(k as FieldPath<PartnerInput>, { message: v?.[0] }));
   };
+
+  if (done) return <Confirmation kind="partner" reference={done} onReset={() => setDone(undefined)} />;
 
   return (
     <form onSubmit={handleSubmit(onValid)} noValidate className="grid gap-8">
@@ -62,9 +63,7 @@ export function PartnerForm() {
         label={
           <>
             I agree to VOIRTALES contacting me about this enquiry, as described in the{" "}
-            <Link href="/privacy" className="text-blue-soft underline underline-offset-4">
-              privacy notice
-            </Link>
+            privacy notice
             .
           </>
         }

@@ -1,17 +1,45 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { primaryNav } from "@/content/site";
-import { useRoute } from "@/lib/preview";
 import { cx } from "@/lib/cx";
 import { Logo } from "./Logo";
 import { MenuOverlay } from "./MenuOverlay";
 
+/** Which section anchor sits above the middle of the screen. */
+function useActiveSection(ids: string[]) {
+  const [active, setActive] = useState(ids[0]);
+  useEffect(() => {
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const mid = window.innerHeight * 0.45;
+      let cur = ids[0];
+      ids.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top <= mid) cur = id;
+      });
+      setActive(cur);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, [ids]);
+  return active;
+}
+
+const NAV_IDS = primaryNav.map((n) => n.href.slice(1));
+
 export function Header() {
-  const pathname = useRoute();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const active = useActiveSection(NAV_IDS);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -20,51 +48,54 @@ export function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => setOpen(false), [pathname]);
-
-  const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
-
   return (
     <>
       <header
         className={cx(
-          "fixed inset-x-0 top-0 z-40 transition-[background-color,border-color,backdrop-filter] duration-500",
-          scrolled ? "border-b border-line bg-ink/55 backdrop-blur-xl" : "border-b border-transparent",
+          "fixed inset-x-0 top-0 z-40 transition-[background-color,border-color] duration-500",
+          scrolled ? "border-b border-white/10 bg-black/55 backdrop-blur-xl" : "border-b border-transparent",
         )}
       >
         <div className="page-x mx-auto flex h-[var(--header-h)] max-w-page items-center justify-between gap-6">
           <Logo />
-          <nav aria-label="Primary" className="hidden xl:block">
+          <nav aria-label="Sections" className="hidden xl:block">
             <ul className="flex items-center gap-7">
-              {primaryNav.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    aria-current={isActive(item.href) ? "page" : undefined}
-                    className={cx(
-                      "font-sans text-[0.72rem] font-semibold uppercase tracking-[0.16em] transition-colors",
-                      isActive(item.href) ? "text-paper" : "text-mute hover:text-paper",
-                    )}
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
+              {primaryNav.map((item) => {
+                const isActive = active === item.href.slice(1);
+                return (
+                  <li key={item.href}>
+                    <a
+                      href={item.href}
+                      aria-current={isActive ? "location" : undefined}
+                      className={cx(
+                        "relative font-sans text-[0.72rem] font-semibold uppercase tracking-[0.16em] transition-colors",
+                        isActive ? "text-paper" : "text-mute hover:text-paper",
+                      )}
+                    >
+                      {item.label}
+                      <span
+                        aria-hidden="true"
+                        className={cx(
+                          "absolute -bottom-2 left-0 h-px w-full origin-left bg-blue transition-transform duration-500",
+                          isActive ? "scale-x-100" : "scale-x-0",
+                        )}
+                      />
+                    </a>
+                  </li>
+                );
+              })}
             </ul>
           </nav>
           <div className="flex items-center gap-3">
-            <Link
-              href="/participate"
-              className="hidden bg-blue px-5 py-2.5 font-sans text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-ink transition-colors hover:bg-paper sm:inline-flex"
-            >
+            <a href="#participate" className="pill pill-solid hidden py-2.5 sm:inline-flex">
               Participate
-            </Link>
+            </a>
             <button
               type="button"
               onClick={() => setOpen(true)}
               aria-expanded={open}
               aria-controls="site-menu"
-              className="group inline-flex items-center gap-3 border border-line px-4 py-2.5 font-sans text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-paper transition-colors hover:border-blue"
+              className="pill group py-2.5"
             >
               Menu
               <span aria-hidden="true" className="flex w-4 flex-col gap-[5px]">

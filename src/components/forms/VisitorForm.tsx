@@ -1,18 +1,17 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { useForm, type FieldPath } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AUDIENCE_OPTIONS, visitorSchema, type VisitorInput } from "@/lib/schemas";
 import { Arrow, Button } from "@/components/ui/Button";
-import { useNavigate } from "@/lib/preview";
+import { Confirmation } from "./Confirmation";
 import { CheckboxField, SelectField, TextArea, TextField } from "./fields";
 import { FormAlert } from "./FormAlert";
 import { submitForm } from "./submit";
 
 export function VisitorForm() {
-  const navigate = useNavigate();
+  const [done, setDone] = useState<string>();
   const [serverError, setServerError] = useState<string>();
   const {
     register,
@@ -28,10 +27,12 @@ export function VisitorForm() {
   const onValid = async (values: VisitorInput) => {
     setServerError(undefined);
     const res = await submitForm("/api/visitor", values);
-    if (res.ok) return navigate("/confirmation/visitor", { ref: res.reference });
+    if (res.ok) return setDone(res.reference);
     setServerError(res.message);
     Object.entries(res.fieldErrors ?? {}).forEach(([k, v]) => setError(k as FieldPath<VisitorInput>, { message: v?.[0] }));
   };
+
+  if (done) return <Confirmation kind="visitor" reference={done} onReset={() => setDone(undefined)} />;
 
   return (
     <form onSubmit={handleSubmit(onValid)} noValidate className="grid gap-8">
@@ -68,9 +69,7 @@ export function VisitorForm() {
         label={
           <>
             Keep me updated about dates, venue and passes for Edition 01. See the{" "}
-            <Link href="/privacy" className="text-blue-soft underline underline-offset-4">
-              privacy notice
-            </Link>
+            privacy notice
             .
           </>
         }

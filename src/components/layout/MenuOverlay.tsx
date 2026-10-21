@@ -1,16 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { journeys, menuNav, site } from "@/content/site";
-import { useRoute } from "@/lib/preview";
 import { accentVar } from "@/lib/accent";
-import { cx } from "@/lib/cx";
 import { lenisRef } from "@/components/motion/SmoothScroll";
 import { Logo } from "./Logo";
 
+/** Full-screen menu. Every item is a section of the landing page. */
 export function MenuOverlay({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const pathname = useRoute();
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -40,7 +37,7 @@ export function MenuOverlay({ open, onClose }: { open: boolean; onClose: () => v
       document.removeEventListener("keydown", onKey);
       document.documentElement.style.overflow = "";
       lenisRef.current?.start();
-      previouslyFocused?.focus?.();
+      previouslyFocused?.focus?.({ preventScroll: true });
     };
   }, [open, onClose]);
 
@@ -52,17 +49,13 @@ export function MenuOverlay({ open, onClose }: { open: boolean; onClose: () => v
       aria-modal="true"
       aria-label="Site menu"
       hidden={!open}
-      className="fixed inset-0 z-50 overflow-y-auto bg-ink/90 backdrop-blur-2xl"
+      data-lenis-prevent
+      className="fixed inset-0 z-50 overflow-y-auto bg-black/92 backdrop-blur-2xl"
     >
       <div className="page-x mx-auto flex min-h-full max-w-page flex-col">
         <div className="flex h-[var(--header-h)] items-center justify-between">
           <Logo onClick={onClose} />
-          <button
-            ref={closeRef}
-            type="button"
-            onClick={onClose}
-            className="inline-flex items-center gap-3 border border-line px-4 py-2.5 font-sans text-[0.72rem] font-semibold uppercase tracking-[0.16em] hover:border-blue"
-          >
+          <button ref={closeRef} type="button" onClick={onClose} className="pill py-2.5">
             Close
             <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
               <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" strokeWidth="1.3" />
@@ -70,30 +63,21 @@ export function MenuOverlay({ open, onClose }: { open: boolean; onClose: () => v
           </button>
         </div>
 
-        <div className="grid flex-1 gap-14 py-10 lg:grid-cols-[1.4fr_1fr] lg:py-16">
+        <div className="grid flex-1 gap-14 py-10 lg:grid-cols-[1.4fr_1fr] lg:py-14">
           <nav aria-label="Menu">
             <ol className="grid gap-1">
-              {menuNav.map((item, i) => {
-                const active = item.href === "/" ? pathname === "/" : pathname === item.href;
-                return (
-                  <li key={item.href + item.label} className={open ? "menu-item" : undefined} style={{ animationDelay: `${i * 0.035}s` }}>
-                    <Link
-                      href={item.href}
-                      onClick={onClose}
-                      aria-current={active ? "page" : undefined}
-                      className={cx(
-                        "group flex items-baseline gap-5 py-1 font-display text-[clamp(1.9rem,4.4vw,3.4rem)] font-bold uppercase leading-[1.02] transition-colors",
-                        active ? "text-blue" : "text-paper hover:text-blue-soft",
-                      )}
-                    >
-                      <span className="label w-6 shrink-0 text-mute group-hover:text-blue-soft">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      {item.label}
-                    </Link>
-                  </li>
-                );
-              })}
+              {menuNav.map((item, i) => (
+                <li key={item.href + item.label} className={open ? "menu-item" : undefined} style={{ animationDelay: `${i * 0.035}s` }}>
+                  <a
+                    href={item.href}
+                    onClick={onClose}
+                    className="group flex items-baseline gap-5 py-1 font-display text-[clamp(1.9rem,4.4vw,3.4rem)] font-bold uppercase leading-[1.02] text-paper transition-colors hover:text-blue"
+                  >
+                    <span className="label w-6 shrink-0 text-mute group-hover:text-blue">{String(i + 1).padStart(2, "0")}</span>
+                    {item.label}
+                  </a>
+                </li>
+              ))}
             </ol>
           </nav>
 
@@ -102,16 +86,18 @@ export function MenuOverlay({ open, onClose }: { open: boolean; onClose: () => v
               <p className="label mb-5">Three journeys</p>
               <ul className="grid gap-3">
                 {journeys.map((j) => (
-                  <li key={j.href}>
-                    <Link
+                  <li key={j.label}>
+                    <a
                       href={j.href}
                       onClick={onClose}
-                      className="glass relative flex items-center justify-between overflow-hidden rounded-xl px-5 py-4 font-sans text-sm font-semibold uppercase tracking-[0.16em] hover:border-blue"
+                      className="flex items-center justify-between rounded-2xl border border-white/12 px-5 py-4 font-sans text-sm font-semibold uppercase tracking-[0.16em] transition-colors hover:border-white/40"
                     >
-                      <span aria-hidden="true" className="absolute inset-y-0 left-0 w-[3px]" style={{ background: accentVar[j.accent] }} />
-                      {j.label}
-                      <span aria-hidden="true">→</span>
-                    </Link>
+                      <span className="flex items-center gap-3">
+                        <span aria-hidden="true" className="h-2 w-2 rounded-full" style={{ background: accentVar[j.accent] }} />
+                        {j.label}
+                      </span>
+                      <span aria-hidden="true">↓</span>
+                    </a>
                   </li>
                 ))}
               </ul>
@@ -119,18 +105,17 @@ export function MenuOverlay({ open, onClose }: { open: boolean; onClose: () => v
             <div>
               <p className="label mb-4">Connect</p>
               <ul className="flex flex-wrap gap-x-6 gap-y-2 text-mute">
-                {site.socials.map((s) => (
-                  <li key={s.label}>
-                    <a href={s.href} onClick={onClose} className="hover:text-paper" {...(s.href.startsWith("http") ? { target: "_blank", rel: "noreferrer" } : {})}>
-                      {s.label}
-                    </a>
-                  </li>
-                ))}
                 <li>
-                  <a href={`mailto:${site.email}`} className="hover:text-paper">
-                    {site.email}
+                  <a href={site.socials[0].href} target="_blank" rel="noreferrer" className="hover:text-paper">
+                    Instagram
                   </a>
                 </li>
+                <li>
+                  <a href="#newsletter" onClick={onClose} className="hover:text-paper">
+                    Newsletter
+                  </a>
+                </li>
+                <li className="select-all text-paper/80">{site.email}</li>
               </ul>
             </div>
             <p className="label mt-auto text-mute">{site.tagline}</p>

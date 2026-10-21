@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { useForm, type FieldPath } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -59,9 +58,7 @@ export function ContactForm({ defaultTopic }: { defaultTopic?: ContactInput["top
         label={
           <>
             I agree to being contacted about my message. See the{" "}
-            <Link href="/privacy" className="text-blue-soft underline underline-offset-4">
-              privacy notice
-            </Link>
+            privacy notice
             .
           </>
         }

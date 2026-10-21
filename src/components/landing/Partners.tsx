@@ -1,13 +1,14 @@
 "use client";
 
-import { useRef } from "react";
-import Link from "next/link";
+import { useRef, useState } from "react";
+import { PartnerForm } from "@/components/forms/PartnerForm";
 import { partnerTiers } from "@/content/partners";
 import { gsap, useSectionMotion } from "./motion";
 
 /** PARTNERS — six ways in, as large rows that light up on approach. */
 export function Partners() {
   const ref = useRef<HTMLElement>(null);
+  const [open, setOpen] = useState(false);
 
   useSectionMotion(ref, (el) => {
     gsap.from(el.querySelectorAll(".pt-h .w-c"), {
@@ -55,13 +56,35 @@ export function Partners() {
             </li>
           ))}
         </ul>
-        <div className="mt-12 flex flex-wrap gap-3">
-          <Link href="/partners/enquire" className="pill pill-solid">
-            Partner with us
-          </Link>
-          <Link href="/partners" className="pill">
-            All opportunities
-          </Link>
+        <div className="mt-12">
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            aria-controls="partner-enquiry"
+            className="pill pill-solid"
+          >
+            {open ? "Close the enquiry" : "Partner with us"}
+            <span aria-hidden="true" className={`transition-transform duration-300 ${open ? "rotate-45" : ""}`}>
+              +
+            </span>
+          </button>
+          <div
+            id="partner-enquiry"
+            className="grid transition-[grid-template-rows,opacity] duration-700 ease-out"
+            style={{ gridTemplateRows: open ? "1fr" : "0fr", opacity: open ? 1 : 0 }}
+          >
+            <div className="overflow-hidden">
+              <div className="mt-8 grid gap-10 rounded-[1.6rem] border border-white/12 bg-night/80 p-6 backdrop-blur-xl md:grid-cols-[0.7fr_1.6fr] md:p-10">
+                <div>
+                  <p className="label mb-2 text-blue">Partner enquiry</p>
+                  <h3 className="font-display text-4xl font-bold uppercase leading-none">Tell us what you&rsquo;d bring.</h3>
+                  <p className="mt-4 text-sm text-mute">We&rsquo;ll confirm by email and follow up personally.</p>
+                </div>
+                {open && <PartnerForm />}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import Link from "next/link";
+import { ApplyButton } from "./ApplyOverlay";
 import { edition, formatINR } from "@/content/edition";
 import { gsap, useSectionMotion } from "./motion";
 
@@ -82,9 +82,7 @@ export function OpenCall() {
         </div>
         <div className="grid gap-4">
           {edition.registrationOpen ? (
-            <Link href="/participate/register" className="pill pill-dark justify-center py-5 text-sm">
-              Register to participate →
-            </Link>
+            <ApplyButton className="pill pill-dark justify-center py-5 text-sm">Register to participate →</ApplyButton>
           ) : (
             <>
               <div className="rounded-[1.4rem] border border-black/25 p-6">
@@ -94,12 +92,10 @@ export function OpenCall() {
                 </p>
               </div>
               <div className="flex flex-wrap gap-3">
-                <Link href="/participate" className="pill pill-dark">
-                  Read the brief
-                </Link>
-                <Link href="/participate/register" className="pill pill-outline-dark">
-                  Preview the application
-                </Link>
+                <a href="#how-to-participate" className="pill pill-dark">
+                  How to participate
+                </a>
+                <ApplyButton className="pill pill-outline-dark">Preview the application</ApplyButton>
               </div>
             </>
           )}

@@ -65,9 +65,7 @@ export function NewsletterForm() {
         />
         <span>
           I&rsquo;d like occasional updates about VOIRANANTAA. I can unsubscribe at any time. See the{" "}
-          <a href="/privacy" className="text-blue-soft underline underline-offset-4">
-            privacy notice
-          </a>
+          privacy notice
           .
         </span>
       </label>
