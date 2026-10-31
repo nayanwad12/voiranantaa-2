@@ -49,8 +49,9 @@ export function Theme() {
     <section ref={ref} data-form="2" className="relative overflow-hidden py-24 sm:py-32">
       <h2 className="sr-only">Infinite Raga — a melody with no end</h2>
       <div aria-hidden="true" className="select-none whitespace-nowrap font-display font-bold uppercase leading-[0.85]">
-        <p className="theme-row-a veil whitespace-nowrap text-[clamp(2.8rem,8vw,7.5rem)]">{rowA}</p>
-        <p className="theme-row-b veil-warm whitespace-nowrap text-[clamp(2.8rem,8vw,7.5rem)]">{rowB}</p>
+        {/* w-max: the text fill only covers the box, so the box must be as wide as the text. */}
+        <p className="theme-row-a veil w-max whitespace-nowrap text-[clamp(2.8rem,8vw,7.5rem)]">{rowA}</p>
+        <p className="theme-row-b veil-warm w-max whitespace-nowrap text-[clamp(2.8rem,8vw,7.5rem)]">{rowB}</p>
       </div>
 
       <div className="theme-pin page-x mx-auto flex min-h-[100svh] max-w-page flex-col justify-center py-16">
