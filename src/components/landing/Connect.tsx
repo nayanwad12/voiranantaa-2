@@ -23,13 +23,14 @@ export function Connect() {
   return (
     <section ref={ref} data-form="8" className="relative">
       <span id="voirtales" aria-hidden="true" className="block h-0" />
-      <div className="page-x mx-auto max-w-page py-28 md:py-36">
-        <div className="cn-in mx-auto flex max-w-5xl flex-col items-center rounded-[2rem] bg-navy px-6 py-14 text-center text-paper sm:px-12 md:py-20">
-          <p className="label mb-6 text-mustard">About {site.publisher}</p>
-          <h2 className="font-display text-[clamp(2.6rem,5.5vw,5.5rem)] font-bold uppercase leading-[0.88]">
+      {/* Full-screen black panel, edge to edge. */}
+      <div className="flex min-h-[100svh] w-full items-center justify-center border-y border-white/10 bg-black py-28">
+        <div className="cn-in page-x flex w-full max-w-page flex-col items-center text-center text-paper">
+          <h2 className="font-display text-[clamp(3.6rem,11vw,10rem)] font-bold uppercase leading-[0.85]">About {site.publisher}</h2>
+          <p className="mt-6 font-sans text-[clamp(0.75rem,1.2vw,0.95rem)] font-semibold uppercase tracking-[0.24em] text-paper/80">
             The world behind {site.name}
-          </h2>
-          <p className="mt-8 max-w-2xl text-xl font-light leading-relaxed text-paper/90 md:text-2xl">
+          </p>
+          <p className="mt-10 max-w-2xl text-xl font-light leading-relaxed text-paper/90 md:text-2xl">
             An independent magazine exploring fashion, lifestyle and culture through people, perspectives, ideas and
             experiences shaping how we see, live and express.
           </p>
@@ -43,7 +44,7 @@ export function Connect() {
       </div>
 
       <span id="contact" aria-hidden="true" className="block h-0" />
-      <div className="page-x mx-auto grid max-w-page gap-12 pb-28 md:grid-cols-[1fr_1.3fr] md:gap-20">
+      <div className="page-x mx-auto grid max-w-page gap-12 py-28 md:grid-cols-[1fr_1.3fr] md:gap-20">
         <div className="cn-in">
           <p className="label mb-6 text-mute">Contact</p>
           <h2 className="veil font-display text-[clamp(2.6rem,5.5vw,5.5rem)] font-bold uppercase leading-[0.88]">Say hello to the infinite</h2>
