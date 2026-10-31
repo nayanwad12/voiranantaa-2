@@ -21,11 +21,9 @@ export function GradientBand() {
 
   return (
     <section ref={ref} data-form="3" className="relative py-16">
-      <div className="band gradient-band flex justify-center overflow-hidden px-[var(--gutter)] py-6 md:py-8">
-        {/* A black panel keeps the line readable over every colour of the band. */}
-        <h2 className="rounded-2xl bg-black px-6 py-4 text-center font-display text-[clamp(1.5rem,3.2vw,3rem)] font-bold uppercase leading-[1.05] text-paper md:px-10">
-          One theme <span aria-hidden="true" className="text-mustard">·</span> Nine emotional worlds{" "}
-          <span aria-hidden="true" className="text-mustard">·</span> Infinite interpretations
+      <div className="band gradient-band flex justify-center overflow-hidden px-[var(--gutter)] py-8 md:py-10">
+        <h2 className="text-center font-display text-[clamp(1.5rem,3.2vw,3rem)] font-bold uppercase leading-[1.05] text-black">
+          One theme <span aria-hidden="true">·</span> Nine emotional worlds <span aria-hidden="true">·</span> Infinite interpretations
         </h2>
       </div>
     </section>
