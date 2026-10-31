@@ -23,7 +23,8 @@ export const edition = {
   judgesConfirmed: false,
 
   show: {
-    datesLabel: "Around 15–16 February 2027",
+    /** null renders "To be announced". */
+    datesLabel: null as string | null,
     tentative: true,
     venue: null as string | null,
     passes: null as string | null,

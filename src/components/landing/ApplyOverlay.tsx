@@ -91,7 +91,7 @@ export function ApplyOverlay() {
         <div className="grid gap-12 pb-24 pt-8 lg:grid-cols-[0.8fr_1.6fr] lg:gap-20">
           <aside className="lg:sticky lg:top-[calc(var(--header-h)+2rem)] lg:self-start">
             <h2 className="font-display text-[clamp(2.8rem,5.5vw,5rem)] font-bold uppercase leading-[0.86]">
-              Make an idea wearable.
+              Make an idea wearable
             </h2>
             {!edition.registrationOpen && (
               <StatusTag className="mt-6">{`Preview — opens ${edition.registrationOpensLabel}`}</StatusTag>

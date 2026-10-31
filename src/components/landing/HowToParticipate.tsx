@@ -66,6 +66,15 @@ const RULES = [
   },
 ];
 
+/** Keeps one answer open at a time: opening a question closes the previous one. */
+function closeOthers(e: React.SyntheticEvent<HTMLDetailsElement>) {
+  const open = e.currentTarget;
+  if (!open.open) return;
+  open.parentElement?.querySelectorAll<HTMLDetailsElement>("details[open]").forEach((d) => {
+    if (d !== open) d.open = false;
+  });
+}
+
 /** HOW TO PARTICIPATE — the registration journey, step by step, then what you'll need and the rules. */
 export function HowToParticipate() {
   const ref = useRef<HTMLElement>(null);
@@ -122,12 +131,12 @@ export function HowToParticipate() {
   });
 
   return (
-    <section ref={ref} data-form="7" className="relative">
+    <section ref={ref} data-form="10" className="relative">
       <div className="ht-stage page-x mx-auto grid min-h-[100svh] max-w-page items-center gap-10 py-24 md:grid-cols-[1fr_1.1fr] md:gap-16">
         <div>
           <p className="label mb-6 text-mute">How to participate</p>
           <h2 className="veil font-display text-[clamp(2.8rem,6vw,6rem)] font-bold uppercase leading-[0.86]">
-            Participant registration journey.
+            Participant registration journey
           </h2>
           <p aria-hidden="true" className="ht-num veil-warm mt-6 hidden font-display text-[clamp(8rem,18vw,16rem)] font-bold leading-none md:block">
             01
@@ -159,7 +168,7 @@ export function HowToParticipate() {
       <div className="page-x mx-auto max-w-page pb-10">
         <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
           <h3 className="veil font-display text-[clamp(2.2rem,4.5vw,4.2rem)] font-bold uppercase leading-[0.9]">
-            What the application asks for.
+            What the application asks for
           </h3>
           <p className="max-w-sm text-sm text-mute">
             Secure uploads — {UPLOAD_RULES.label}. Progress saves on your device. Works on your phone.
@@ -186,14 +195,14 @@ export function HowToParticipate() {
             </div>
           ))}
         </div>
-        <div className="mt-10 flex flex-col gap-4 rounded-[1.4rem] border border-white/12 p-6 sm:flex-row sm:items-center sm:justify-between md:p-8">
+        <div className="mt-10 flex flex-col gap-4 rounded-[1.4rem] bg-paper p-6 text-black sm:flex-row sm:items-center sm:justify-between md:p-8">
           <div>
-            <p className="label text-mute">{edition.registrationOpen ? "Registration is open" : "Registration opens"}</p>
+            <p className="label text-black/60">{edition.registrationOpen ? "Registration is open" : "Registration opens"}</p>
             <p className="mt-1 font-display text-[clamp(1.8rem,3vw,2.6rem)] font-bold uppercase leading-none">
               {edition.registrationOpen ? edition.registrationClosesLabel ?? "Apply now" : edition.registrationOpensLabel}
             </p>
           </div>
-          <ApplyButton className="pill pill-solid">{edition.registrationOpen ? "Register to participate" : "Preview the application"}</ApplyButton>
+          <ApplyButton className="pill pill-dark">{edition.registrationOpen ? "Register to participate" : "Preview the application"}</ApplyButton>
         </div>
       </div>
 
@@ -201,14 +210,14 @@ export function HowToParticipate() {
       <div className="page-x mx-auto grid max-w-page gap-10 py-24 md:grid-cols-[0.8fr_1.4fr] md:gap-20">
         <div>
           <p className="label mb-6 text-mute">Rules &amp; guidelines</p>
-          <h3 className="veil font-display text-[clamp(2.4rem,5vw,4.6rem)] font-bold uppercase leading-[0.88]">The fine print, plainly.</h3>
+          <h3 className="veil font-display text-[clamp(2.4rem,5vw,4.6rem)] font-bold uppercase leading-[0.88]">Your guide</h3>
           <p className="mt-6 max-w-sm text-sm text-mute">
             Final rules, terms and policies are published before registration opens. Nothing here should be read as final until then.
           </p>
         </div>
         <div className="border-t border-white/15">
           {RULES.map((r) => (
-            <details key={r.q} className="rule group border-b border-white/15">
+            <details key={r.q} className="rule group border-b border-white/15" onToggle={closeOthers}>
               <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-6 font-display text-[clamp(1.4rem,2.4vw,2.1rem)] font-bold uppercase leading-tight transition-colors hover:text-mustard [&::-webkit-details-marker]:hidden">
                 {r.q}
                 <span aria-hidden="true" className="relative h-4 w-4 shrink-0">

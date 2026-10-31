@@ -2,15 +2,15 @@
 
 Website for **VOIRANANTAA Edition 01 / Infinite Raga**, a wearable-art competition and live experience by VOIRTALES.
 
-Everything lives on **one landing page**: a single descent through a night-time universe, **Sky → Air → Space → Water → Earth**. Behind the page, smeared colour drifts through jet black like a long exposure of a moving body. Each chapter has its own colour mix, scroll speed stretches the motion blur, and film grain sits over everything. The nav bar and menu scroll to sections of the page. The forms open in place: the participant application in a full-screen layer, and the partner, visitor, contact and newsletter forms inline.
+Everything lives on **one landing page**, in five chapters: the edition, **The Theme**, **The Competition**, **The Live Experience** and **Vision**. Behind the page, smeared colour drifts through jet black, drawn as a different element in each chapter: **sky** (light streaks and stars), **air** (thin currents of wind), **fire** (rising flame and embers), **water** (swell and caustic light) and **earth** (folded strata). Elements cross-fade as you scroll, and film grain sits over everything. The nav bar and menu scroll to sections of the page. The forms open in place: the participant application in a full-screen layer, and the partner, visitor, contact and newsletter forms inline.
 
 ## Stack
 
 - **Next.js 15** (App Router, TypeScript), **Tailwind CSS 3**
 - **Lenis** for smooth scrolling, **GSAP ScrollTrigger** for pinned scenes and scroll-linked motion
-- A **WebGL** smear shader for the background and a CSS film-grain overlay (`src/components/universe/`)
+- A **WebGL** shader for the five element backgrounds and a CSS film-grain overlay (`src/components/universe/`)
 - **react-hook-form** + **zod** forms. The same schemas validate in the browser and in the API routes.
-- Self-hosted fonts: **Barlow Condensed** (stand-in for DIN Condensed) and **Montserrat**
+- Self-hosted fonts: **D-DIN Condensed** for headings (Datto's free cut of DIN Condensed, SIL OFL 1.1, in `src/fonts/`), **Montserrat** for body copy, and **Barlow Condensed** as a fallback for glyphs D-DIN lacks
 
 ## Run
 
@@ -41,11 +41,11 @@ The normal `npm run build` is unchanged by this.
 
 | What | Where |
 | --- | --- |
-| Brand, nav, menu and footer links (section anchors) | `src/content/site.ts` |
+| Brand, nav, menu and footer links (section anchors), VOIRTALES / VOIRUNIVERSE / HHAP links | `src/content/site.ts` |
 | Dates, fees, venue, status flags | `src/content/edition.ts` |
 | Rasas, categories, rules, criteria, partner tiers, timeline | `src/content/*.ts` |
 | Colour and type tokens | `src/app/globals.css` (`:root`) + `tailwind.config.ts` |
-| Background smear field (mood per chapter) + grain | `src/components/universe/` |
+| Background elements and moods (`SCENES` in `smear.ts`, chosen by each section's `data-form`) + grain | `src/components/universe/` |
 | Landing page order and section anchors | `src/app/page.tsx` |
 | Landing sections | `src/components/landing/` |
 | Forms + validation | `src/components/forms/`, `src/lib/schemas.ts` |
@@ -76,7 +76,7 @@ All copy that is expected to change lives in `src/content/`. These files are typ
 ## Motion and accessibility
 
 - **Enter:** the hero name resolves letter by letter, then the tagline.
-- **Transitions:** each chapter opens with its element's name flying through the camera while the universe re-forms.
+- **Transitions:** each chapter opens with its title flying through the camera while the background changes element.
 - **Reveal:** kinetic type, scroll-linked marquees and word-by-word statements.
 - **`prefers-reduced-motion`:** smooth scrolling, pins and animations are off, and the universe is frozen in time. The page shows its static layout.
 - **No WebGL, ≤2 CPU cores or Save-Data:** a static gradient replaces the universe.
@@ -112,7 +112,7 @@ The API routes validate input, then call `persist()` in `src/lib/api.ts`, which 
 
 ### Using licensed DIN Condensed
 
-Put the `.woff2` files in `public/fonts/` and add an `@font-face` for `"DIN Condensed Web"` in `globals.css`. Then set `--font-display: "DIN Condensed Web";` in `:root`. Barlow Condensed stays as the fallback.
+Headings use D-DIN Condensed, a free DIN Condensed cut. To switch to a licensed DIN Condensed webfont, put its `.woff2` files in `src/fonts/`, add an `@font-face` for `"DIN Condensed Web"` in `globals.css`, then set `--font-display: "DIN Condensed Web";` in `:root`.
 
 ## Decisions required before registration opens
 
@@ -121,5 +121,7 @@ These come from the Edition 01 blueprint (p.25) and affect copy, form logic, pay
 **Event details:** exact registration opening and closing dates · final show date(s) · venue and capacity · free RSVP vs paid ticket · finalist announcement window.
 
 **Competition rules:** proposal-first vs finished-artwork submission · 95/5 measurement and verification · AI / machine-use policy wording · fee and refund policy · IP, image and publicity permissions · final safety specifications.
+
+The footer's VOIRTALES, VOIRUNIVERSE and HHAP links (`network` in `src/content/site.ts`) use placeholder addresses. Confirm them before launch.
 
 Privacy, terms, refund, participation-rules and accessibility pages will be added once their text is approved. Until then the footer lists them as "published before registration opens".

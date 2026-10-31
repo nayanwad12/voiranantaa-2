@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { site } from "@/content/site";
+import { network, site } from "@/content/site";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { gsap, useSectionMotion } from "./motion";
 
@@ -23,21 +23,22 @@ export function Connect() {
   return (
     <section ref={ref} data-form="8" className="relative">
       <span id="voirtales" aria-hidden="true" className="block h-0" />
-      <div className="page-x mx-auto grid max-w-page gap-8 py-28 md:grid-cols-[1fr_1.2fr] md:gap-20 md:py-36">
-        <div className="cn-in">
-          <p className="label mb-6 text-mute">About {site.publisher}</p>
-          <h2 className="veil font-display text-[clamp(2.6rem,5.5vw,5.5rem)] font-bold uppercase leading-[0.88]">
-            The world behind {site.name}.
+      <div className="page-x mx-auto max-w-page py-28 md:py-36">
+        <div className="cn-in mx-auto flex max-w-5xl flex-col items-center rounded-[2rem] bg-navy px-6 py-14 text-center text-paper sm:px-12 md:py-20">
+          <p className="label mb-6 text-mustard">About {site.publisher}</p>
+          <h2 className="font-display text-[clamp(2.6rem,5.5vw,5.5rem)] font-bold uppercase leading-[0.88]">
+            The world behind {site.name}
           </h2>
-        </div>
-        <div className="cn-in md:pt-12">
-          <p className="text-xl font-light leading-relaxed text-paper/85 md:text-2xl">
+          <p className="mt-8 max-w-2xl text-xl font-light leading-relaxed text-paper/90 md:text-2xl">
             An independent magazine exploring fashion, lifestyle and culture through people, perspectives, ideas and
             experiences shaping how we see, live and express.
           </p>
-          <p className="mt-6 text-mute">
+          <p className="mt-6 max-w-xl text-paper/75">
             {site.name} is its annual initiative — Edition 01 / Infinite Raga is the first chapter.
           </p>
+          <a href={network[0].href} target="_blank" rel="noreferrer" className="pill pill-solid mt-10">
+            Visit {network[0].label} <span aria-hidden="true">↗</span>
+          </a>
         </div>
       </div>
 
@@ -45,7 +46,7 @@ export function Connect() {
       <div className="page-x mx-auto grid max-w-page gap-12 pb-28 md:grid-cols-[1fr_1.3fr] md:gap-20">
         <div className="cn-in">
           <p className="label mb-6 text-mute">Contact</p>
-          <h2 className="veil font-display text-[clamp(2.6rem,5.5vw,5.5rem)] font-bold uppercase leading-[0.88]">Say hello to the infinite.</h2>
+          <h2 className="veil font-display text-[clamp(2.6rem,5.5vw,5.5rem)] font-bold uppercase leading-[0.88]">Say hello to the infinite</h2>
           <dl className="mt-10 grid gap-6 border-t border-white/15 pt-8">
             <div>
               <dt className="label mb-1 text-mute">General</dt>

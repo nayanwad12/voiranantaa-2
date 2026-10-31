@@ -19,6 +19,13 @@ export const site = {
 
 export type NavItem = { label: string; href: string };
 
+/** The VOIRTALES family of websites. Placeholder addresses: confirm before launch. */
+export const network: NavItem[] = [
+  { label: "VOIRTALES", href: "https://voirtales.com" },
+  { label: "VOIRUNIVERSE", href: "https://voiruniverse.com" },
+  { label: "HHAP", href: "https://hhap.com" },
+];
+
 /**
  * Everything lives on one landing page; every link is a section of it.
  * Section ids are set by the anchors in src/app/page.tsx.
@@ -87,12 +94,7 @@ export const footerNav: { title: string; links: NavItem[] }[] = [
   },
   {
     title: "Connect",
-    links: [
-      { label: "Contact", href: "#contact" },
-      { label: "Instagram", href: "https://instagram.com/" },
-      { label: "Magazine", href: "#voirtales" },
-      { label: "Newsletter", href: "#newsletter" },
-    ],
+    links: network,
   },
 ];
 

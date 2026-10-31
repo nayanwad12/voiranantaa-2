@@ -24,7 +24,7 @@ const config: Config = {
         pink: "#e31f14",
       },
       fontFamily: {
-        display: ["var(--font-display)", "DIN Condensed", "Arial Narrow", "sans-serif"],
+        display: ["var(--font-display)", "DIN Condensed", "Barlow Condensed", "Arial Narrow", "sans-serif"],
         sans: ["var(--font-sans)", "Helvetica Neue", "Helvetica", "Arial", "sans-serif"],
       },
       letterSpacing: {

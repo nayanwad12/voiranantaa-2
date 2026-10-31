@@ -35,17 +35,19 @@ export function Attend() {
   });
 
   const rows = [
-    { k: "Proposed dates", v: edition.show.datesLabel, tag: edition.show.tentative ? "Tentative" : undefined },
+    edition.show.datesLabel
+      ? { k: "Proposed dates", v: edition.show.datesLabel, tag: edition.show.tentative ? "Tentative" : undefined }
+      : { k: "Dates", v: "To be announced" },
     { k: "Venue", v: edition.show.venue ?? "To be announced" },
     { k: "Passes", v: edition.show.passes ?? "Details to be announced" },
   ];
 
   return (
-    <section ref={ref} data-form="0" className="relative py-28 md:py-36">
+    <section ref={ref} data-form="11" className="relative py-28 md:py-36">
       <div className="page-x mx-auto max-w-page">
         <p className="label mb-6 text-mute">Attend the show</p>
         <h2 className="at-h font-display text-[clamp(3.2rem,9vw,9rem)] font-bold uppercase leading-[0.84]">
-          {["Come see what", "art can become."].map((l) => (
+          {["Come see what", "art can become"].map((l) => (
             <span key={l} className="block overflow-hidden pb-[0.04em]">
               <span className="w-c veil inline-block">{l}</span>
             </span>

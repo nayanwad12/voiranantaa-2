@@ -1,6 +1,6 @@
 export const partnerTiers = [
   { name: "Title / Founding", body: "Lead partnership across edition identity and key communications.", accent: "blue" },
-  { name: "Category", body: "Support for RAGA / FORM or RAGA / VOICE.", accent: "pink" },
+  { name: "Category", body: "Collaborate across categories.", accent: "pink" },
   { name: "Material", body: "Materials, tools, processes or expertise.", accent: "green" },
   { name: "Technology", body: "Projection, lighting, sound, digital or immersive technology.", accent: "blue" },
   { name: "Experience", body: "Stage, exhibition environment and audience experience.", accent: "pink" },

@@ -40,7 +40,7 @@ export function Idea() {
             {words("This is not", "w veil")}
             <br />
             <span className="relative inline-block">
-              {words("a fashion show.", "w veil")}
+              {words("a fashion show", "w veil")}
               <span aria-hidden="true" className="idea-strike absolute left-[-2%] top-1/2 h-[3px] w-[104%] origin-left bg-red" />
             </span>
           </p>
@@ -49,7 +49,7 @@ export function Idea() {
           <p className="font-display text-[clamp(3.4rem,12.5vw,12rem)] font-bold uppercase leading-[0.86]">
             {words("This is", "w veil")}
             <br />
-            <span>{words("wearable art.", "w veil-warm")}</span>
+            <span>{words("wearable art", "w veil-warm")}</span>
           </p>
           <p className="idea-tail mx-auto mt-10 max-w-xl text-lg font-light leading-relaxed text-paper/80">
             Emotion, translated into form, material, construction and performance — and brought to life on stage.

@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { gsap, useSectionMotion } from "./motion";
 
 /**
- * A threshold between two elements. The element's name flies through the
+ * A threshold between two chapters. The chapter's name flies through the
  * camera while the universe re-forms behind it.
  */
 export function Gate({
@@ -19,6 +19,8 @@ export function Gate({
   form: number;
 }) {
   const ref = useRef<HTMLElement>(null);
+  // Size the title so its longest word fits the width of the screen.
+  const longest = Math.max(...name.split(" ").map((w) => w.length));
 
   useSectionMotion(ref, (el) => {
     const word = el.querySelector(".gate-word");
@@ -44,7 +46,8 @@ export function Gate({
         {String(index).padStart(2, "0")} — 05
       </p>
       <p
-        className={`gate-word ${["veil-warm", "veil-cool", "veil-olive", "veil-warm"][(index - 2) % 4]} font-display text-[clamp(6rem,30vw,26rem)] font-bold uppercase leading-[0.8]`}
+        className={`gate-word ${["veil-warm", "veil-cool", "veil-olive", "veil-warm"][(index - 2) % 4]} px-[var(--gutter)] font-display font-bold uppercase leading-[0.84]`}
+        style={{ fontSize: `clamp(3rem, ${Math.min(name.includes(" ") ? 22 : 30, 150 / longest).toFixed(1)}vw, 26rem)` }}
       >
         {name}
       </p>

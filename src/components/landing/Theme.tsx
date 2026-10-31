@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { gsap, useSectionMotion, words } from "./motion";
 
-const STATEMENT = "A raga unfolds. It changes with every phrase, every pause, every interpretation.";
+const STATEMENT = "A raga unfolds. It changes with every phrase, every pause, every interpretation";
 
 /** THE THEME — the title streams past like a melody; the statement lights up word by word. */
 export function Theme() {
@@ -49,8 +49,8 @@ export function Theme() {
     <section ref={ref} data-form="2" className="relative overflow-hidden py-24 sm:py-32">
       <h2 className="sr-only">Infinite Raga — a melody with no end</h2>
       <div aria-hidden="true" className="select-none whitespace-nowrap font-display font-bold uppercase leading-[0.85]">
-        <p className="theme-row-a outline-type whitespace-nowrap text-[clamp(5rem,17vw,16rem)]">{rowA}</p>
-        <p className="theme-row-b veil-warm whitespace-nowrap text-[clamp(5rem,17vw,16rem)]">{rowB}</p>
+        <p className="theme-row-a veil whitespace-nowrap text-[clamp(2.8rem,8vw,7.5rem)]">{rowA}</p>
+        <p className="theme-row-b veil-warm whitespace-nowrap text-[clamp(2.8rem,8vw,7.5rem)]">{rowB}</p>
       </div>
 
       <div className="theme-pin page-x mx-auto flex min-h-[100svh] max-w-page flex-col justify-center py-16">
@@ -61,7 +61,7 @@ export function Theme() {
       </div>
 
       <div className="page-x mx-auto grid max-w-page gap-10 pb-10 md:grid-cols-2 md:gap-24">
-        <p className="theme-body text-xl font-light leading-relaxed text-paper/85 md:text-2xl">
+        <p className="theme-body text-xl font-semibold leading-relaxed text-paper md:text-2xl">
           INFINITE RAGA takes this idea beyond sound and into the physical world.
         </p>
         <p className="theme-body text-lg font-light leading-relaxed text-mute">

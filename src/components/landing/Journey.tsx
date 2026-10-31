@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { timeline, toConfirm } from "@/content/timeline";
+import { timeline } from "@/content/timeline";
 import { gsap, useSectionMotion } from "./motion";
 
 /** THE JOURNEY — a light travels the timeline, waking each milestone. */
@@ -37,7 +37,7 @@ export function Journey() {
           <h2 className="veil font-display text-[clamp(2.8rem,6.5vw,6.5rem)] font-bold uppercase leading-[0.86]">
             The journey
             <br />
-            to the stage.
+            to the stage
           </h2>
           <span className="rounded-full border border-pink/50 px-4 py-1.5 font-sans text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-pink">
             Tentative timeline
@@ -64,7 +64,6 @@ export function Journey() {
             ))}
           </ol>
         </div>
-        <p className="mt-16 text-sm text-mute">To be confirmed: {toConfirm.join(" · ").toLowerCase()}.</p>
       </div>
     </section>
   );

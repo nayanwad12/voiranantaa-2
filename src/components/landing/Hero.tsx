@@ -48,7 +48,6 @@ export function Hero() {
       <div className="page-x mx-auto flex h-full max-w-page flex-col justify-between pb-8 pt-[calc(var(--header-h)+1.5rem)]">
         <div className="hero-out hero-fade flex items-center justify-between font-sans text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-mute">
           <span>{edition.label}</span>
-          <span className="hidden sm:inline">A wearable-art competition &amp; live experience</span>
           <span>{edition.title}</span>
         </div>
 
@@ -75,22 +74,13 @@ export function Hero() {
           <p className="hero-tag hero-fade mt-5 font-sans text-[clamp(0.8rem,1.6vw,1.25rem)] font-semibold uppercase tracking-[0.55em] text-mustard">
             {site.tagline}
           </p>
+          <p className="hero-out hero-fade mt-6 font-sans text-[clamp(0.68rem,1.1vw,0.85rem)] font-semibold uppercase tracking-[0.24em] text-paper/80">
+            A wearable-art competition &amp; live experience
+          </p>
         </div>
 
-        <div className="hero-out hero-fade flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-          <p className="max-w-sm text-[1.05rem] font-light leading-relaxed text-paper/80">
-            Nine emotional worlds. Twenty finalists. One stage. A wearable-art competition and live experience by{" "}
-            {site.publisher}.
-          </p>
-          <div className="flex flex-wrap items-center gap-3">
-            <a href="#participate" className="pill pill-solid">
-              Participate
-            </a>
-            <a href="#theme" className="pill">
-              Explore the theme
-            </a>
-          </div>
-        </div>
+        {/* Balances the top row so the name sits in the middle. */}
+        <div aria-hidden="true" className="h-4" />
       </div>
     </section>
   );

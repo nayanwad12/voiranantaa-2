@@ -1,11 +1,12 @@
 import { footerNav, legalNotes, site } from "@/content/site";
+import { FitText } from "@/components/ui/FitText";
 import { NewsletterForm } from "./NewsletterForm";
 
 export function Footer() {
   return (
     <footer className="relative border-t border-white/10 bg-black">
       <div aria-hidden="true" className="gradient-band absolute inset-x-0 top-0 h-px opacity-60" />
-      <div className="page-x mx-auto max-w-page pb-10 pt-20">
+      <div className="page-x mx-auto max-w-page pt-20">
         <div className="grid gap-14 lg:grid-cols-[1.1fr_2fr]">
           <div id="newsletter" className="scroll-mt-28">
             <p className="label mb-4">Newsletter</p>
@@ -35,20 +36,18 @@ export function Footer() {
             ))}
           </nav>
         </div>
+      </div>
 
-        <div className="mt-24">
-          <p
-            aria-hidden="true"
-            className="veil-warm select-none font-display text-[clamp(3.4rem,15.5vw,16rem)] font-bold uppercase leading-[0.8] tracking-[0.01em]"
-          >
-            {site.name}
+      <div aria-hidden="true" className="mt-24 select-none px-3">
+        <FitText className="veil-warm font-display font-bold uppercase leading-[0.8]">{site.name}</FitText>
+      </div>
+
+      <div className="page-x mx-auto max-w-page pb-10">
+        <div className="mt-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+          <p className="label text-mustard">{site.tagline}</p>
+          <p className="font-sans text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-paper">
+            An annual initiative by {site.publisher}
           </p>
-          <div className="mt-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-            <p className="label text-mustard">{site.tagline}</p>
-            <p className="font-sans text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-paper">
-              An annual initiative by {site.publisher}
-            </p>
-          </div>
         </div>
 
         <div className="my-8 h-px bg-white/10" />

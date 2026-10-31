@@ -24,8 +24,9 @@ function Anchor({ id }: { id: string }) {
 }
 
 /**
- * Edition 01 — everything on one page: the descent from Sky to Earth.
- * Each section names the shape the universe takes behind it (data-form).
+ * Edition 01 — everything on one page, in five chapters. Each section names
+ * the mood of the background behind it (data-form); each chapter has its
+ * own element: sky, air, fire, water, earth.
  */
 export default function HomePage() {
   return (
@@ -34,35 +35,35 @@ export default function HomePage() {
       <Intro />
       <ApplyOverlay />
 
-      {/* 01 SKY — the edition and the idea */}
+      {/* 01 The edition and the idea — sky */}
       <Hero />
       <Anchor id="idea" />
       <Idea />
 
-      {/* 02 AIR — the theme */}
-      <Gate index={2} name="Air" subject="The theme" form={2} />
+      {/* 02 The theme — air */}
+      <Gate index={2} name="The Theme" subject="Infinite Raga" form={2} />
       <Anchor id="theme" />
       <Theme />
       <Anchor id="rasas" />
       <RasaGallery />
       <GradientBand />
 
-      {/* 03 SPACE — the competition */}
-      <Gate index={3} name="Space" subject="The competition" form={4} />
+      {/* 03 The competition — fire */}
+      <Gate index={3} name="The Competition" subject="Two categories · One challenge" form={4} />
       <Anchor id="categories" />
       <Categories />
       <Anchor id="challenge" />
       <Challenge />
 
-      {/* 04 WATER — the experience and the journey */}
-      <Gate index={4} name="Water" subject="The live experience" form={6} />
+      {/* 04 The live experience and the journey — water */}
+      <Gate index={4} name="The Live Experience" subject="Five minutes on stage" form={6} />
       <Anchor id="experience" />
       <Live />
       <Anchor id="journey" />
       <Journey />
 
-      {/* 05 EARTH — make it real */}
-      <Gate index={5} name="Earth" subject="Make it real" form={8} />
+      {/* 05 Vision: make it real — earth */}
+      <Gate index={5} name="Vision" subject="Make it real" form={8} />
       <Anchor id="participate" />
       <OpenCall />
       <Anchor id="how-to-participate" />

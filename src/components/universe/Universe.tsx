@@ -6,8 +6,9 @@ import { fragmentShader, SCENES, vertexShader } from "./smear";
 
 /**
  * Smeared colour drifting through black behind the whole page. Sections name
- * their mood with `data-form="0..9"`; the field blends from one mood to the
- * next as they scroll past, and scroll speed stretches the motion blur.
+ * their mood with `data-form="0..11"`; each mood belongs to an element (sky,
+ * air, fire, water, earth), and the field blends from one to the next as they
+ * scroll past.
  */
 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
@@ -72,6 +73,7 @@ export function Universe() {
       density: u("uDensity"),
       focus: u("uFocus"),
       dim: u("uDim"),
+      el: u("uEl"),
     };
 
     // Soft by design: render small and let the browser upscale.
@@ -94,6 +96,7 @@ export function Universe() {
       angle: first.angle,
       density: first.density,
       focus: [first.focus[0], first.focus[1]],
+      el: Float32Array.from({ length: 5 }, (_, i) => (i === first.el ? 1 : 0)),
     };
     let time = 12;
     let drift = 0;
@@ -124,6 +127,7 @@ export function Universe() {
       cur.density = approach(cur.density, lerp(a.density, b.density, m));
       cur.focus[0] = approach(cur.focus[0], lerp(a.focus[0], b.focus[0], m));
       cur.focus[1] = approach(cur.focus[1], lerp(a.focus[1], b.focus[1], m));
+      for (let i = 0; i < 5; i++) cur.el[i] = approach(cur.el[i], lerp(i === a.el ? 1 : 0, i === b.el ? 1 : 0, m));
 
       const y = window.scrollY;
       const raw = lenisRef.current?.velocity ?? (y - lastY) / Math.max(dt, 1 / 120) / 60;
@@ -143,6 +147,7 @@ export function Universe() {
       gl.uniform1f(U.angle, cur.angle);
       gl.uniform1f(U.density, cur.density);
       gl.uniform2f(U.focus, cur.focus[0], cur.focus[1]);
+      gl.uniform1fv(U.el, cur.el);
       gl.uniform1f(U.time, time);
       gl.uniform1f(U.drift, drift);
       gl.uniform1f(U.vel, reduced ? 0 : vel);

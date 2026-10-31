@@ -6,7 +6,7 @@ type Kind = "participant" | "partner" | "visitor";
 
 const COPY: Record<Kind, { title: string; lines: string[] }> = {
   participant: {
-    title: "Application received.",
+    title: "Application received",
     lines: [
       edition.emailsConnected
         ? "A confirmation email with your application ID and next steps is on its way."
@@ -15,14 +15,14 @@ const COPY: Record<Kind, { title: string; lines: string[] }> = {
     ],
   },
   partner: {
-    title: "Enquiry received.",
+    title: "Enquiry received",
     lines: [
       edition.emailsConnected ? "We've sent a confirmation to your work email." : "Keep this reference for your records.",
       "The VOIRTALES partnerships team will follow up by email to arrange a conversation.",
     ],
   },
   visitor: {
-    title: "Interest recorded.",
+    title: "Interest recorded",
     lines: [
       "We'll email you when dates, venue and passes are confirmed.",
       "Registering interest does not guarantee entry. Entry is confirmed only once a pass or ticket is issued.",

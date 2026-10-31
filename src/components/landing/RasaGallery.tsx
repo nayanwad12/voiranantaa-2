@@ -2,8 +2,9 @@
 
 import { useRef } from "react";
 import { rasas } from "@/content/rasas";
-import { RasaGlyph } from "@/components/ui/RasaGlyph";
 import { gsap, useSectionMotion } from "./motion";
+
+const SWATCHES = ["var(--crimson)", "var(--mustard)", "var(--olive)", "var(--navy)", "var(--teal)"];
 
 /** The nine rasas — a compact reference list, not a feature. */
 export function RasaGallery() {
@@ -31,13 +32,13 @@ export function RasaGallery() {
           {rasas.map((r, i) => (
             <li
               key={r.id}
-              className="rasa-item group flex items-center gap-3 rounded-xl border border-white/10 bg-night/70 px-3 py-3 transition-colors hover:border-white/30 lg:flex-col lg:items-start lg:gap-2"
+              className="rasa-item relative flex min-h-[8.5rem] flex-col justify-between overflow-hidden rounded-xl border border-white/10 bg-night/70 p-4 backdrop-blur-sm transition-colors duration-300 hover:border-white/30"
             >
-              <RasaGlyph id={r.id} accent={r.accent} className="h-8 w-8 shrink-0 opacity-80 transition-transform duration-700 group-hover:rotate-12" />
-              <div className="min-w-0">
-                <p className="font-sans text-[0.6rem] font-semibold tabular-nums tracking-[0.2em] text-mute">{String(i + 1).padStart(2, "0")}</p>
-                <h3 className="font-display text-lg font-bold uppercase leading-tight">{r.name}</h3>
-                <p className="text-[0.72rem] leading-snug text-mute">{r.feeling}</p>
+              <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[3px]" style={{ background: SWATCHES[i % SWATCHES.length] }} />
+              <p className="font-sans text-[0.62rem] font-semibold tabular-nums tracking-[0.2em] text-mute">{String(i + 1).padStart(2, "0")}</p>
+              <div>
+                <h3 className="font-display text-xl font-bold uppercase leading-none">{r.name}</h3>
+                <p className="mt-1.5 text-[0.74rem] leading-snug text-paper/70">{r.feeling}</p>
               </div>
             </li>
           ))}

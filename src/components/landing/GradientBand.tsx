@@ -17,21 +17,16 @@ export function GradientBand() {
         scrollTrigger: { trigger: el, start: "top 85%", end: "top 25%", scrub: 0.8 },
       },
     );
-    gsap.fromTo(
-      el.querySelector(".band-text"),
-      { xPercent: 0 },
-      { xPercent: -30, ease: "none", scrollTrigger: { trigger: el, start: "top bottom", end: "bottom top", scrub: 0.5 } },
-    );
   });
 
-  const line = Array.from({ length: 3 }, () => "One theme · Nine emotional worlds · Infinite interpretations · ").join("");
   return (
     <section ref={ref} data-form="3" className="relative py-16">
-      <h2 className="sr-only">One theme. Nine emotional worlds. Infinite interpretations.</h2>
-      <div className="band gradient-band overflow-hidden py-8 md:py-12" aria-hidden="true">
-        <p className="band-text whitespace-nowrap font-display text-[clamp(3rem,9vw,8.5rem)] font-bold uppercase leading-none text-black">
-          {line}
-        </p>
+      <div className="band gradient-band flex justify-center overflow-hidden px-[var(--gutter)] py-6 md:py-8">
+        {/* A black panel keeps the line readable over every colour of the band. */}
+        <h2 className="rounded-2xl bg-black px-6 py-4 text-center font-display text-[clamp(1.5rem,3.2vw,3rem)] font-bold uppercase leading-[1.05] text-paper md:px-10">
+          One theme <span aria-hidden="true" className="text-mustard">·</span> Nine emotional worlds{" "}
+          <span aria-hidden="true" className="text-mustard">·</span> Infinite interpretations
+        </h2>
       </div>
     </section>
   );

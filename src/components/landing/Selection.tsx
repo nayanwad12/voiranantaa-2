@@ -58,13 +58,17 @@ export function Selection() {
   });
 
   return (
-    <section ref={ref} data-form="4" className="relative py-28 md:py-36">
+    <section ref={ref} data-form="10" className="relative py-28 md:py-36">
       <span id="selection" aria-hidden="true" className="block h-0" />
       <div className="page-x mx-auto max-w-page">
         <p className="label mb-6 text-mute">Selection process</p>
         <h2 className="veil max-w-5xl font-display text-[clamp(2.8rem,7vw,7rem)] font-bold uppercase leading-[0.86]">
-          {edition.selection.totalFinalists} finalists. Two category winners.
+          Who owns the stage
         </h2>
+        <p className="mt-6 max-w-xl text-lg font-light leading-relaxed text-paper/85">
+          {edition.selection.totalFinalists} finalists, {edition.selection.finalistsPerCategory} per category, and{" "}
+          {edition.selection.winners} category winners.
+        </p>
 
         <div className="mt-16 grid gap-px overflow-hidden rounded-[1.4rem] border border-white/12 bg-white/12 md:grid-cols-3">
           {[
@@ -103,9 +107,9 @@ export function Selection() {
         <div className="mt-28">
           <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
             <h3 className="veil font-display text-[clamp(2.4rem,5.5vw,5.4rem)] font-bold uppercase leading-[0.88]">
-              Six lenses.
+              Six lenses
               <br />
-              One complete work.
+              One complete work
             </h3>
             <p className="max-w-xs text-sm text-mute">Every finalist is judged through the same six lenses. Tap or hover a lens to read its question.</p>
           </div>
@@ -140,7 +144,7 @@ export function Selection() {
           <div>
             <p className="label mb-6 text-mute">The judges</p>
             <h3 className="veil font-display text-[clamp(2.4rem,5.5vw,5.4rem)] font-bold uppercase leading-[0.88]">
-              Meet the eyes behind {site.name}.
+              Meet the eyes behind {site.name}
             </h3>
             <p className="mt-6 max-w-md text-lg font-light leading-relaxed text-paper/80">
               The panel brings perspectives across fashion, art, design, material, performance and culture.
