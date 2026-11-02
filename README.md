@@ -2,13 +2,13 @@
 
 Website for **VOIRANANTAA Edition 01 / Infinite Raga**, a wearable-art competition and live experience by VOIRTALES.
 
-Everything lives on **one landing page**, in five chapters: the edition, **The Theme**, **The Competition**, **The Live Experience** and **Vision**. Behind the page, smeared colour drifts through jet black, drawn as a different element in each chapter: **sky** (light streaks and stars), **air** (thin currents of wind), **fire** (rising flame and embers), **water** (swell and caustic light) and **earth** (folded strata). Elements cross-fade as you scroll, and film grain sits over everything. The nav bar and menu scroll to sections of the page. The forms open in place: the participant application in a full-screen layer, and the partner, visitor, contact and newsletter forms inline.
+Everything lives on **one landing page**, in five chapters: the edition, **The Theme**, **The Competition**, **The Live Experience** and **Vision**. Behind the page, soft out-of-focus light drifts through jet black, like a defocused photograph, in each chapter's element colours: **sky** (black and purple), **air** (light blue and lemon yellow), **fire** (yellow and orange), **water** (blue and black) and **earth** (brown, orange and black). Colours cross-fade as you scroll, and film grain sits over everything. The nav bar and menu scroll to sections of the page. The forms open in place: the participant application in a full-screen layer, and the partner, visitor, contact and newsletter forms inline.
 
 ## Stack
 
 - **Next.js 15** (App Router, TypeScript), **Tailwind CSS 3**
 - **Lenis** for smooth scrolling, **GSAP ScrollTrigger** for pinned scenes and scroll-linked motion
-- A **WebGL** shader for the five element backgrounds and a CSS film-grain overlay (`src/components/universe/`)
+- A **WebGL** shader for the soft-focus background and a CSS film-grain overlay (`src/components/universe/`)
 - **react-hook-form** + **zod** forms. The same schemas validate in the browser and in the API routes.
 - Self-hosted fonts: **D-DIN Condensed** for headings (Datto's free cut of DIN Condensed, SIL OFL 1.1, in `src/fonts/`), **Montserrat** for body copy, and **Barlow Condensed** as a fallback for glyphs D-DIN lacks
 

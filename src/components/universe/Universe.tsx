@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { lenisRef } from "@/components/motion/SmoothScroll";
 import { fragmentShader, SCENES, vertexShader } from "./smear";
 
 /**
- * Smeared colour drifting through black behind the whole page. Sections name
+ * Soft, defocused colour drifting through black behind the whole page. Sections name
  * their mood with `data-form="0..11"`; each mood belongs to an element (sky,
  * air, fire, water, earth), and the field blends from one to the next as they
  * scroll past.
@@ -67,17 +66,15 @@ export function Universe() {
       res: u("uRes"),
       time: u("uTime"),
       drift: u("uDrift"),
-      vel: u("uVel"),
       pal: u("uPal"),
       angle: u("uAngle"),
-      density: u("uDensity"),
+      level: u("uLevel"),
       focus: u("uFocus"),
       dim: u("uDim"),
-      el: u("uEl"),
     };
 
     // Soft by design: render small and let the browser upscale.
-    const scale = small ? 0.32 : 0.38;
+    const scale = small ? 0.4 : 0.5;
     const resize = () => {
       const w = Math.max(2, Math.round(canvas.clientWidth * scale));
       const h = Math.max(2, Math.round(canvas.clientHeight * scale));
@@ -94,14 +91,11 @@ export function Universe() {
     const cur = {
       pal: Float32Array.from(first.pal.flat()),
       angle: first.angle,
-      density: first.density,
+      level: first.level,
       focus: [first.focus[0], first.focus[1]],
-      el: Float32Array.from({ length: 5 }, (_, i) => (i === first.el ? 1 : 0)),
     };
     let time = 12;
     let drift = 0;
-    let vel = 0;
-    let lastY = window.scrollY;
     let last = performance.now();
     let raf = 0;
     let dirty = true;
@@ -124,16 +118,11 @@ export function Universe() {
       for (let i = 0; i < 5; i++)
         for (let j = 0; j < 3; j++) cur.pal[i * 3 + j] = approach(cur.pal[i * 3 + j], lerp(a.pal[i][j], b.pal[i][j], m));
       cur.angle = approach(cur.angle, lerp(a.angle, b.angle, m));
-      cur.density = approach(cur.density, lerp(a.density, b.density, m));
+      cur.level = approach(cur.level, lerp(a.level, b.level, m));
       cur.focus[0] = approach(cur.focus[0], lerp(a.focus[0], b.focus[0], m));
       cur.focus[1] = approach(cur.focus[1], lerp(a.focus[1], b.focus[1], m));
-      for (let i = 0; i < 5; i++) cur.el[i] = approach(cur.el[i], lerp(i === a.el ? 1 : 0, i === b.el ? 1 : 0, m));
 
       const y = window.scrollY;
-      const raw = lenisRef.current?.velocity ?? (y - lastY) / Math.max(dt, 1 / 120) / 60;
-      lastY = y;
-      // Scroll speed eases in and out slowly, so streaks lengthen gently.
-      vel += (clamp(raw / 40, -1, 1) - vel) * (1 - Math.exp(-dt * 1.4));
       drift += ((y / window.innerHeight) * 0.6 - drift) * (1 - Math.exp(-dt * 1.2));
 
       if (reduced) {
@@ -145,12 +134,10 @@ export function Universe() {
 
       gl.uniform3fv(U.pal, cur.pal);
       gl.uniform1f(U.angle, cur.angle);
-      gl.uniform1f(U.density, cur.density);
+      gl.uniform1f(U.level, cur.level);
       gl.uniform2f(U.focus, cur.focus[0], cur.focus[1]);
-      gl.uniform1fv(U.el, cur.el);
       gl.uniform1f(U.time, time);
       gl.uniform1f(U.drift, drift);
-      gl.uniform1f(U.vel, reduced ? 0 : vel);
       gl.uniform1f(U.dim, 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     };
