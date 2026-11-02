@@ -95,6 +95,11 @@ const hex = (h: string): RGB => {
 /** Element colours, leaning on the brand swatches (navy, mustard). */
 const C = {
   black: hex("#000000"),
+  // hero: night blue with red, blue and olive light
+  night: hex("#02060F"),
+  scarlet: hex("#E3281A"),
+  glow: hex("#2C63C0"),
+  moss: hex("#4E7A1E"),
   // sky: black and purple
   plum: hex("#3B1466"),
   violet: hex("#6A2FA0"),
@@ -127,8 +132,8 @@ export type Scene = { pal: [RGB, RGB, RGB, RGB, RGB]; angle: number; focus: [num
 
 /** One mood per section (data-form 0–11), grouped by the chapter's element. */
 export const SCENES: Scene[] = [
-  // 0 hero — sky
-  { pal: [C.black, C.plum, C.violet, C.lavender, C.black], angle: 0.9, focus: [0.1, 0.05], level: 0.85 },
+  // 0 hero — red at the left, blue at the right, olive below, on night blue
+  { pal: [C.night, C.scarlet, C.blue, C.glow, C.moss], angle: 0.6, focus: [0.05, 0.0], level: 0.95 },
   // 1 idea — sky
   { pal: [C.black, C.violet, C.indigo, C.lavender, C.black], angle: -0.6, focus: [-0.25, -0.05], level: 0.8 },
   // 2 theme — air
