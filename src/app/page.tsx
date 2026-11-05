@@ -1,4 +1,3 @@
-import { Intro } from "@/components/landing/Intro";
 import { ApplyOverlay } from "@/components/landing/ApplyOverlay";
 import { Hero } from "@/components/landing/Hero";
 import { Idea } from "@/components/landing/Idea";
@@ -32,7 +31,6 @@ export default function HomePage() {
   return (
     <main id="main" data-scene="0" className="relative">
       <Anchor id="top" />
-      <Intro />
       <ApplyOverlay />
 
       {/* 01 The edition and the idea — sky */}

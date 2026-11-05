@@ -4,7 +4,6 @@ import { useRef } from "react";
 import { site } from "@/content/site";
 import { edition } from "@/content/edition";
 import { gsap, useSectionMotion } from "./motion";
-import { onIntroDone } from "./Intro";
 import { HeroGalaxy } from "./HeroGalaxy";
 
 /** ENTER — the name arrives over a 3D galaxy, then breaks apart as the camera flies in. */
@@ -17,10 +16,9 @@ export function Hero() {
     gsap.set(letters, { yPercent: 115 });
     gsap.set(el.querySelectorAll(".hero-fade"), { autoAlpha: 0, y: 24 });
 
-    const stopIntro = onIntroDone(() => {
-      gsap.to(letters, { yPercent: 0, duration: 1.4, ease: "expo.out", stagger: { each: 0.06, from: "center" } });
-      gsap.to(el.querySelectorAll(".hero-fade"), { autoAlpha: 1, y: 0, duration: 1.2, ease: "power3.out", stagger: 0.12, delay: 0.6 });
-    });
+    // The name rises in as soon as the page opens.
+    gsap.to(letters, { yPercent: 0, duration: 1.4, ease: "expo.out", stagger: { each: 0.06, from: "center" }, delay: 0.15 });
+    gsap.to(el.querySelectorAll(".hero-fade"), { autoAlpha: 1, y: 0, duration: 1.2, ease: "power3.out", stagger: 0.12, delay: 0.7 });
 
     const tl = gsap.timeline({
       scrollTrigger: { trigger: el, start: "top top", end: c.desktop ? "+=130%" : "+=90%", scrub: 1, pin: true },
@@ -38,19 +36,20 @@ export function Hero() {
       },
       0,
     )
-      .to(el.querySelector(".hero-tag"), { letterSpacing: "1.2em", opacity: 0, ease: "power1.in" }, 0)
+      .to(el.querySelector(".hero-tag"), { letterSpacing: "1.2em", ease: "power1.in" }, 0)
       .to(el.querySelectorAll(".hero-out"), { opacity: 0, y: -40, ease: "power1.in" }, 0);
-
-    return stopIntro;
   });
 
   return (
     <section ref={ref} data-form="0" className="relative h-[100svh] overflow-hidden bg-black">
       <HeroGalaxy />
       <div className="page-x relative mx-auto flex h-full max-w-page flex-col justify-between pb-8 pt-[calc(var(--header-h)+1.5rem)]">
-        <div className="hero-out hero-fade flex items-center justify-between font-sans text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-mute">
-          <span>{edition.label}</span>
-          <span>{edition.title}</span>
+        {/* Wrappers (hero-out) leave on scroll; their contents (hero-fade) fade in on load. */}
+        <div className="hero-out">
+          <div className="hero-fade flex items-center justify-between font-sans text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-mute">
+            <span>{edition.label}</span>
+            <span>{edition.title}</span>
+          </div>
         </div>
 
         <div className="text-center">
@@ -73,12 +72,14 @@ export function Hero() {
               ))}
             </span>
           </h1>
-          <p className="hero-tag hero-fade mt-5 font-sans text-[clamp(0.8rem,1.6vw,1.25rem)] font-semibold uppercase tracking-[0.55em] text-mustard">
-            {site.tagline}
-          </p>
-          <p className="hero-out hero-fade mt-6 font-sans text-[clamp(0.68rem,1.1vw,0.85rem)] font-semibold uppercase tracking-[0.24em] text-paper/80">
-            A wearable-art competition &amp; live experience
-          </p>
+          <div className="hero-out">
+            <p className="hero-tag hero-fade mt-5 font-sans text-[clamp(0.8rem,1.6vw,1.25rem)] font-semibold uppercase tracking-[0.55em] text-mustard">
+              {site.tagline}
+            </p>
+            <p className="hero-fade mt-6 font-sans text-[clamp(0.68rem,1.1vw,0.85rem)] font-semibold uppercase tracking-[0.24em] text-paper/80">
+              A wearable-art competition &amp; live experience
+            </p>
+          </div>
         </div>
 
         {/* Balances the top row so the name sits in the middle. */}
