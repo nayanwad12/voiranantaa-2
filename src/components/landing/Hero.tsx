@@ -5,8 +5,9 @@ import { site } from "@/content/site";
 import { edition } from "@/content/edition";
 import { gsap, useSectionMotion } from "./motion";
 import { onIntroDone } from "./Intro";
+import { HeroGalaxy } from "./HeroGalaxy";
 
-/** ENTER — the name arrives, then breaks apart into depth as you scroll in. */
+/** ENTER — the name arrives over a 3D galaxy, then breaks apart as the camera flies in. */
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
 
@@ -44,8 +45,9 @@ export function Hero() {
   });
 
   return (
-    <section ref={ref} data-form="0" className="relative h-[100svh] overflow-hidden">
-      <div className="page-x mx-auto flex h-full max-w-page flex-col justify-between pb-8 pt-[calc(var(--header-h)+1.5rem)]">
+    <section ref={ref} data-form="0" className="relative h-[100svh] overflow-hidden bg-black">
+      <HeroGalaxy />
+      <div className="page-x relative mx-auto flex h-full max-w-page flex-col justify-between pb-8 pt-[calc(var(--header-h)+1.5rem)]">
         <div className="hero-out hero-fade flex items-center justify-between font-sans text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-mute">
           <span>{edition.label}</span>
           <span>{edition.title}</span>
