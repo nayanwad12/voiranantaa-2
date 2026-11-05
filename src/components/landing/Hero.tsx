@@ -4,9 +4,8 @@ import { useRef } from "react";
 import { site } from "@/content/site";
 import { edition } from "@/content/edition";
 import { gsap, useSectionMotion } from "./motion";
-import { HeroGalaxy } from "./HeroGalaxy";
 
-/** ENTER — the name arrives over a 3D galaxy, then breaks apart as the camera flies in. */
+/** ENTER — the name arrives over the galaxy, then breaks apart into depth as you scroll in. */
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
 
@@ -41,8 +40,7 @@ export function Hero() {
   });
 
   return (
-    <section ref={ref} data-form="0" className="relative h-[100svh] overflow-hidden bg-black">
-      <HeroGalaxy />
+    <section ref={ref} data-form="0" className="relative h-[100svh] overflow-hidden">
       <div className="page-x relative mx-auto flex h-full max-w-page flex-col justify-between pb-8 pt-[calc(var(--header-h)+1.5rem)]">
         {/* Wrappers (hero-out) leave on scroll; their contents (hero-fade) fade in on load. */}
         <div className="hero-out">

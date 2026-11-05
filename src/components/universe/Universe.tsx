@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { fragmentShader, SCENES, vertexShader } from "./smear";
+import { buildParticles, galaxyFragment, galaxyVertex, lookAt, perspective, SCENES, tilt } from "./galaxy";
 
 /**
- * Soft, defocused colour drifting through black behind the whole page. Sections name
- * their mood with `data-form="0..11"`; each mood belongs to an element (sky,
- * air, fire, water, earth), and the field blends from one to the next as they
- * scroll past.
+ * The particle universe behind the whole page. Sections name their mood with
+ * `data-form="0..11"`; each mood sets a shape (vortex, air, fire, water,
+ * earth), colours and a camera. Everything eases towards the mood in view, so
+ * scrolling travels through one continuous space: shapes scatter and
+ * re-form between chapters while the camera surges forward.
  */
 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
@@ -47,41 +48,57 @@ export function Universe() {
     const gl =
       (nav.hardwareConcurrency ?? 4) <= 2 || nav.connection?.saveData
         ? null
-        : (canvas.getContext("webgl", { antialias: false, alpha: false, depth: false, powerPreference: "low-power" }) as WebGLRenderingContext | null);
+        : (canvas.getContext("webgl", { antialias: false, alpha: false, depth: false, powerPreference: "high-performance" }) as WebGLRenderingContext | null);
     const program = gl && build(gl);
     if (!gl || !program) {
       setFallback(true);
       return;
     }
 
-    const buf = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-    const aPos = gl.getAttribLocation(program, "aPos");
-    gl.enableVertexAttribArray(aPos);
-    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+    const parts = buildParticles(small ? 0.55 : 1);
     gl.useProgram(program);
+    const attr = (name: string, values: Float32Array, size: number) => {
+      gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+      gl.bufferData(gl.ARRAY_BUFFER, values, gl.STATIC_DRAW);
+      const loc = gl.getAttribLocation(program, name);
+      gl.enableVertexAttribArray(loc);
+      gl.vertexAttribPointer(loc, size, gl.FLOAT, false, 0, 0);
+    };
+    attr("aA", parts.a, 4);
+    attr("aB", parts.b, 4);
+    attr("aInfo", parts.info, 2);
     const u = (n: string) => gl.getUniformLocation(program, n);
     const U = {
-      res: u("uRes"),
+      proj: u("uProj"),
+      view: u("uView"),
+      tilt: u("uTilt"),
       time: u("uTime"),
-      drift: u("uDrift"),
-      pal: u("uPal"),
-      angle: u("uAngle"),
+      scale: u("uScale"),
+      dpr: u("uDpr"),
+      w: u("uW"),
+      colA: u("uColA"),
+      colB: u("uColB"),
       level: u("uLevel"),
-      focus: u("uFocus"),
-      dim: u("uDim"),
     };
+    gl.uniformMatrix3fv(U.tilt, false, tilt(0.95, -0.15));
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE);
+    gl.clearColor(0, 0, 0, 1);
 
-    // Soft by design: render small and let the browser upscale.
-    const scale = small ? 0.4 : 0.5;
+    const fov = (55 * Math.PI) / 180;
+    const dpr = Math.min(window.devicePixelRatio || 1, small ? 1.5 : 1.75);
+    let portrait = false;
+    let dirty = true;
     const resize = () => {
-      const w = Math.max(2, Math.round(canvas.clientWidth * scale));
-      const h = Math.max(2, Math.round(canvas.clientHeight * scale));
-      canvas.width = w;
-      canvas.height = h;
-      gl.viewport(0, 0, w, h);
-      gl.uniform2f(U.res, w, h);
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      portrait = w < h;
+      canvas.width = Math.max(2, Math.round(w * dpr));
+      canvas.height = Math.max(2, Math.round(h * dpr));
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.uniformMatrix4fv(U.proj, false, perspective(fov, w / h, 0.05, 60));
+      gl.uniform1f(U.scale, h / (2 * Math.tan(fov / 2)));
+      gl.uniform1f(U.dpr, dpr);
       dirty = true;
     };
 
@@ -89,16 +106,24 @@ export function Universe() {
     // themselves (not the blend index) keeps chapter boundaries seamless.
     const first = SCENES[readTarget().from] ?? SCENES[0];
     const cur = {
-      pal: Float32Array.from(first.pal.flat()),
-      angle: first.angle,
+      w: Float32Array.from({ length: 5 }, (_, i) => (i === first.shape ? 1 : 0)),
+      colA: [...first.colA],
+      colB: [...first.colB],
       level: first.level,
-      focus: [first.focus[0], first.focus[1]],
+      yaw: first.yaw,
+      pitch: first.pitch,
+      dist: first.dist,
     };
-    let time = 12;
-    let drift = 0;
+    const pointer = { x: 0, y: 0 };
+    const look = { x: 0, y: 0 };
+    const onPointer = (e: PointerEvent) => {
+      pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
+      pointer.y = (e.clientY / window.innerHeight) * 2 - 1;
+    };
+
+    let time = 20;
     let last = performance.now();
     let raf = 0;
-    let dirty = true;
 
     const frame = (now: number) => {
       raf = requestAnimationFrame(frame);
@@ -108,22 +133,25 @@ export function Universe() {
       const a = SCENES[target.from] ?? SCENES[0];
       const b = SCENES[target.to] ?? a;
       const m = target.mix;
-      const ease = reduced ? 1 : 1 - Math.exp(-dt * 1.1);
+      const ease = reduced ? 1 : 1 - Math.exp(-dt * 1.4);
       let changed = false;
-      const approach = (curV: number, to: number) => {
-        const next = curV + (to - curV) * ease;
-        if (Math.abs(next - curV) > 1e-4) changed = true;
+      const approach = (v: number, to: number) => {
+        const next = v + (to - v) * ease;
+        if (Math.abs(next - v) > 1e-4) changed = true;
         return next;
       };
-      for (let i = 0; i < 5; i++)
-        for (let j = 0; j < 3; j++) cur.pal[i * 3 + j] = approach(cur.pal[i * 3 + j], lerp(a.pal[i][j], b.pal[i][j], m));
-      cur.angle = approach(cur.angle, lerp(a.angle, b.angle, m));
+      for (let i = 0; i < 5; i++) cur.w[i] = approach(cur.w[i], lerp(i === a.shape ? 1 : 0, i === b.shape ? 1 : 0, m));
+      for (let i = 0; i < 3; i++) {
+        cur.colA[i] = approach(cur.colA[i], lerp(a.colA[i], b.colA[i], m));
+        cur.colB[i] = approach(cur.colB[i], lerp(a.colB[i], b.colB[i], m));
+      }
       cur.level = approach(cur.level, lerp(a.level, b.level, m));
-      cur.focus[0] = approach(cur.focus[0], lerp(a.focus[0], b.focus[0], m));
-      cur.focus[1] = approach(cur.focus[1], lerp(a.focus[1], b.focus[1], m));
-
-      const y = window.scrollY;
-      drift += ((y / window.innerHeight) * 0.6 - drift) * (1 - Math.exp(-dt * 1.2));
+      cur.yaw = approach(cur.yaw, lerp(a.yaw, b.yaw, m));
+      cur.pitch = approach(cur.pitch, lerp(a.pitch, b.pitch, m));
+      cur.dist = approach(cur.dist, lerp(a.dist, b.dist, m));
+      const follow = reduced ? 1 : 1 - Math.exp(-dt * 2.5);
+      look.x += (pointer.x - look.x) * follow;
+      look.y += (pointer.y - look.y) * follow;
 
       if (reduced) {
         if (!changed && !dirty) return;
@@ -132,14 +160,23 @@ export function Universe() {
       }
       dirty = false;
 
-      gl.uniform3fv(U.pal, cur.pal);
-      gl.uniform1f(U.angle, cur.angle);
+      // Between shapes the camera surges forward through the scattering dust.
+      const between = clamp((1 - Math.max(...cur.w)) * 2, 0, 1);
+      const surge = between * between * (3 - 2 * between);
+      // A slow turn tied to the whole page keeps the journey continuous.
+      const drift = (window.scrollY / window.innerHeight) * 0.035;
+      const radius = cur.dist * (portrait ? 1.55 : 1) * (1 - surge * 0.28);
+      const yaw = cur.yaw + drift + look.x * 0.12;
+      const pitch = cur.pitch - look.y * 0.08;
+      const eye = [Math.sin(yaw) * Math.cos(pitch) * radius, Math.sin(pitch) * radius, Math.cos(yaw) * Math.cos(pitch) * radius];
+      gl.uniformMatrix4fv(U.view, false, lookAt(eye, [0, 0, 0], [0, 1, 0]));
+      gl.uniform1fv(U.w, cur.w);
+      gl.uniform3f(U.colA, cur.colA[0], cur.colA[1], cur.colA[2]);
+      gl.uniform3f(U.colB, cur.colB[0], cur.colB[1], cur.colB[2]);
       gl.uniform1f(U.level, cur.level);
-      gl.uniform2f(U.focus, cur.focus[0], cur.focus[1]);
       gl.uniform1f(U.time, time);
-      gl.uniform1f(U.drift, drift);
-      gl.uniform1f(U.dim, 0);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.drawArrays(gl.POINTS, 0, parts.count);
     };
 
     const onVisibility = () => {
@@ -153,11 +190,13 @@ export function Universe() {
 
     resize();
     window.addEventListener("resize", resize);
+    window.addEventListener("pointermove", onPointer, { passive: true });
     document.addEventListener("visibilitychange", onVisibility);
     raf = requestAnimationFrame(frame);
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
+      window.removeEventListener("pointermove", onPointer);
       document.removeEventListener("visibilitychange", onVisibility);
     };
   }, []);
@@ -168,10 +207,7 @@ export function Universe() {
       className="pointer-events-none fixed inset-0 -z-10 h-lvh w-full bg-black"
       style={
         fallback
-          ? {
-              background:
-                "radial-gradient(ellipse at 30% 40%, rgba(227,31,20,.35), transparent 45%), radial-gradient(ellipse at 75% 65%, rgba(0,62,118,.45), transparent 50%), radial-gradient(ellipse at 55% 20%, rgba(226,190,34,.18), transparent 40%), #000",
-            }
+          ? { background: "radial-gradient(ellipse at 50% 50%, rgba(214,220,255,.08), transparent 60%), #000" }
           : undefined
       }
     >
@@ -191,8 +227,8 @@ function build(gl: WebGLRenderingContext) {
     }
     return s;
   };
-  const vs = sh(gl.VERTEX_SHADER, vertexShader);
-  const fs = sh(gl.FRAGMENT_SHADER, fragmentShader);
+  const vs = sh(gl.VERTEX_SHADER, galaxyVertex);
+  const fs = sh(gl.FRAGMENT_SHADER, galaxyFragment);
   if (!vs || !fs) return null;
   const p = gl.createProgram()!;
   gl.attachShader(p, vs);
