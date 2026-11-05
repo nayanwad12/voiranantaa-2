@@ -6,8 +6,9 @@ import { buildGalaxy, galaxyFragment, galaxyVertex, lookAt, perspective, tilt } 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
 
 /**
- * The hero's 3D galaxy. The camera drifts with the pointer and flies into the
- * vortex as the hero scrolls away. Renders only while the hero is on screen.
+ * The hero's full-screen 3D galaxy. The camera drifts with the pointer and
+ * turns slowly around the core as the hero scrolls away. Renders only while
+ * the hero is on screen.
  */
 export function HeroGalaxy() {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -35,7 +36,7 @@ export function HeroGalaxy() {
     attr("aData", g.data, 4);
     const u = (n: string) => gl.getUniformLocation(program, n);
     const U = { proj: u("uProj"), view: u("uView"), tilt: u("uTilt"), time: u("uTime"), scale: u("uScale"), dpr: u("uDpr") };
-    gl.uniformMatrix3fv(U.tilt, false, tilt(1.12, -0.32));
+    gl.uniformMatrix3fv(U.tilt, false, tilt(0.95, -0.15));
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.ONE, gl.ONE);
     gl.clearColor(0, 0, 0, 1);
@@ -60,8 +61,8 @@ export function HeroGalaxy() {
       pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
       pointer.y = (e.clientY / window.innerHeight) * 2 - 1;
     };
-    // Small screens are portrait: step back so the vortex fits the width.
-    const distance = () => (canvas.clientWidth < canvas.clientHeight ? 6.4 : 4.6);
+    // Close enough that the disk runs past every edge; portrait screens step back a little.
+    const distance = () => (canvas.clientWidth < canvas.clientHeight ? 6.0 : 3.9);
 
     let time = 20;
     let last = performance.now();
@@ -70,20 +71,19 @@ export function HeroGalaxy() {
 
     // dt = 0 snaps the camera into place (first frame, resize).
     const draw = (dt = 0) => {
-      // The hero pins for about 130% of the viewport; that is the fly-in.
+      // The hero pins for about 130% of the viewport; over it the galaxy turns slowly.
       const progress = clamp(window.scrollY / (window.innerHeight * 1.3), 0, 1);
       const follow = (rate: number) => (reduced || dt === 0 ? 1 : 1 - Math.exp(-dt * rate));
       cam.p += (progress - cam.p) * follow(5);
       cam.x += (pointer.x - cam.x) * follow(2.5);
       cam.y += (pointer.y - cam.y) * follow(2.5);
       const fly = cam.p * cam.p * (3 - 2 * cam.p);
-      const radius = distance() * (1 - fly * 0.84);
-      const yaw = cam.x * 0.22 + fly * 0.7;
-      const pitch = 0.08 - cam.y * 0.14 + fly * 0.18;
+      const radius = distance() * (1 - fly * 0.1);
+      const yaw = cam.x * 0.12 + fly * 0.45;
+      const pitch = -cam.y * 0.08 + fly * 0.12;
       const eye = [Math.sin(yaw) * Math.cos(pitch) * radius, Math.sin(pitch) * radius, Math.cos(yaw) * Math.cos(pitch) * radius];
-      // Looking slightly left of the core puts the vortex to the right of the name.
-      const look = [-0.55 * (1 - fly), 0.15 * (1 - fly), 0];
-      gl.uniformMatrix4fv(U.view, false, lookAt([eye[0] + look[0], eye[1] + look[1], eye[2]], look, [0, 1, 0]));
+      // Always looking at the core, so it stays in the centre of the screen.
+      gl.uniformMatrix4fv(U.view, false, lookAt(eye, [0, 0, 0], [0, 1, 0]));
       gl.uniform1f(U.time, time);
       gl.clear(gl.COLOR_BUFFER_BIT);
       gl.drawArrays(gl.POINTS, 0, g.count);

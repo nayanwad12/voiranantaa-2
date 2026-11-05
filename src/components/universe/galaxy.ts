@@ -1,9 +1,9 @@
 /**
- * The hero's galaxy: a 3D field of white particles on black. A tilted vortex
- * of dotted rings and spiral arms turns slowly (inner orbits faster), a stream
- * of particles flows out of its centre, chains of glowing beads orbit with it,
- * and a deep starfield surrounds everything. All motion runs on the GPU; the
- * page only moves the camera.
+ * The hero's galaxy: a full-screen 3D field of white particles on black. A
+ * tilted vortex of dotted rings and spiral arms turns slowly around a bright
+ * core (inner orbits faster), chains of glowing beads orbit with it, and a
+ * deep starfield surrounds everything. All motion runs on the GPU; the page
+ * only moves the camera.
  */
 
 export const galaxyVertex = /* glsl */ `
@@ -18,10 +18,6 @@ uniform float uDpr;
 varying float vBright;
 varying float vGlow;
 
-const vec3 JET = vec3(0.98, 0.06, -0.2);
-const vec3 JET_U = vec3(-0.06, 1.0, 0.0);
-const vec3 JET_V = vec3(0.2, 0.0, 0.98);
-
 vec3 spin(vec3 p, float a) {
   float c = cos(a), s = sin(a);
   return vec3(c * p.x - s * p.z, p.y, s * p.x + c * p.z);
@@ -29,28 +25,10 @@ vec3 spin(vec3 p, float a) {
 
 void main() {
   float kind = aData.x;
-  float speed = aData.y;
   float phase = aData.w;
-  vec3 p = aPos;
+  // Stars: the whole sky turns very slowly. Dust and beads orbit the disk's axis.
+  vec3 p = kind < 0.5 ? spin(aPos, uTime * 0.006) : uTilt * spin(aPos, uTime * aData.y);
   float bright = 1.0;
-
-  if (kind < 0.5) {
-    // Stars: the whole sky turns very slowly.
-    p = spin(p, uTime * 0.006);
-  } else if (kind < 1.5) {
-    // Vortex dust: orbits the disk's axis; speed falls off with radius.
-    p = uTilt * spin(p, uTime * speed);
-  } else if (kind < 2.5) {
-    // Stream: flows out of the centre and widens, fading at both ends.
-    float len = 3.6;
-    float x = mod(p.x + uTime * speed, len);
-    float spread = 0.025 + x * 0.085;
-    p = JET * (x + 0.08) + JET_U * p.y * spread + JET_V * p.z * spread;
-    bright = smoothstep(0.0, 0.35, x) * (1.0 - smoothstep(len * 0.55, len, x));
-  } else {
-    // Beads: glowing chains that orbit with the vortex.
-    p = uTilt * spin(p, uTime * speed);
-  }
 
   vec4 mv = uView * vec4(p, 1.0);
   float depth = max(-mv.z, 0.05);
@@ -59,10 +37,12 @@ void main() {
   float px = aData.z * uScale / depth;
   // Points thinner than a pixel stay one pixel and dim instead, so they never shimmer.
   bright *= clamp(px, 0.0, 1.0);
-  gl_PointSize = clamp(px, 1.0, 90.0) * uDpr;
+  // Capped sizes keep the field fine-grained, however close a particle comes.
+  float maxPx = kind > 0.5 && kind < 1.5 ? 2.4 : kind > 1.5 ? 16.0 : 7.0;
+  gl_PointSize = clamp(px, 1.0, maxPx) * uDpr;
 
   // Dust brightens towards the core; stars and beads keep their own light.
-  float gain = kind > 1.5 && kind < 2.5 ? 1.7 : kind > 0.5 && kind < 1.5 ? 1.5 * (1.35 - clamp(length(aPos.xz) * 0.3, 0.0, 0.9)) : kind > 2.5 ? 1.6 : 1.1;
+  float gain = kind > 0.5 && kind < 1.5 ? 1.5 * (1.3 - clamp(length(aPos.xz) * 0.18, 0.0, 0.8)) : kind > 1.5 ? 1.25 : 1.0;
   bright *= gain * (0.72 + 0.28 * sin(uTime * (0.8 + fract(phase * 7.31) * 2.2) + phase * 6.2831));
   bright *= smoothstep(24.0, 7.0, depth) * smoothstep(0.12, 0.7, depth);
   vBright = bright * fract(phase * 3.17 + 0.37) * 0.55 + bright * 0.45;
@@ -99,8 +79,7 @@ function rng(seed: number) {
 
 const STAR = 0;
 const DUST = 1;
-const STREAM = 2;
-const BEAD = 3;
+const BEAD = 2;
 
 /** Builds every particle: position (xyz) and data (kind, speed, size, phase). */
 export function buildGalaxy(density: number) {
@@ -115,70 +94,68 @@ export function buildGalaxy(density: number) {
     pos.push(x, y, z);
     data.push(kind, speed, size, r());
   };
-  const orbit = (rad: number) => 0.34 / (rad + 0.25);
+  // The disk is drawn large enough to fill the screen; orbits keep their pace.
+  const S = 1.45;
+  const orbit = (rad: number) => 0.34 / (rad / S + 0.25);
   // The disk sinks towards its centre, like a funnel.
-  const well = (rad: number) => -0.42 * Math.exp(-rad * 1.5);
+  const well = (rad: number) => -0.5 * Math.exp((-rad / S) * 1.5);
   const n = (count: number) => Math.round(count * density);
 
   // Stars: a deep shell around the scene, a few of them large and glowing.
-  for (let i = 0; i < n(2600); i++) {
+  for (let i = 0; i < n(2800); i++) {
     const u = r() * 2 - 1;
     const a = r() * Math.PI * 2;
-    const d = 5 + r() * 11;
+    const d = 5.5 + r() * 11;
     const s = Math.sqrt(1 - u * u);
-    const big = r() < 0.03;
-    add(Math.cos(a) * s * d, u * d, Math.sin(a) * s * d, STAR, 0, big ? 0.09 + r() * 0.1 : 0.012 + r() * 0.018);
+    const big = r() < 0.012;
+    add(Math.cos(a) * s * d, u * d, Math.sin(a) * s * d, STAR, 0, big ? 0.08 + r() * 0.07 : 0.012 + r() * 0.016);
   }
 
   // Vortex rings: dotted, slightly uneven orbits.
-  for (let k = 0; k < 34; k++) {
-    const rad = 0.18 + k * 0.066;
-    const count = n(60 + rad * 150);
+  for (let k = 0; k < 36; k++) {
+    const rad = (0.18 + k * 0.066) * S;
+    const count = n((60 + (rad / S) * 150) * S);
     for (let i = 0; i < count; i++) {
       const a = (i / count) * Math.PI * 2 + r() * 0.01;
-      const rr = rad * (1 + 0.06 * Math.sin(3 * a + k)) + gauss() * 0.004;
-      add(Math.cos(a) * rr, well(rr) + gauss() * 0.012, Math.sin(a) * rr, DUST, orbit(rr), 0.0055 + r() * 0.0045);
+      const rr = rad * (1 + 0.06 * Math.sin(3 * a + k)) + gauss() * 0.005;
+      add(Math.cos(a) * rr, well(rr) + gauss() * 0.015, Math.sin(a) * rr, DUST, orbit(rr), 0.0055 + r() * 0.0045);
     }
   }
 
   // Spiral arms: curving filaments through the rings.
-  for (let i = 0; i < n(3200); i++) {
-    const rad = 0.2 + Math.pow(r(), 1.3) * 2.4;
+  for (let i = 0; i < n(4600); i++) {
+    const rad = (0.2 + Math.pow(r(), 1.3) * 2.5) * S;
     const arm = Math.floor(r() * 2);
-    const a = arm * Math.PI + Math.log(rad) * 2.4 + gauss() * 0.14;
-    add(Math.cos(a) * rad, well(rad) + gauss() * 0.04, Math.sin(a) * rad, DUST, orbit(rad), 0.006 + r() * 0.005);
+    const a = arm * Math.PI + Math.log(rad / S) * 2.4 + gauss() * 0.14;
+    add(Math.cos(a) * rad, well(rad) + gauss() * 0.05, Math.sin(a) * rad, DUST, orbit(rad), 0.006 + r() * 0.005);
   }
 
-  // Halo: loose dust around the disk, gathering towards the core.
-  for (let i = 0; i < n(3400); i++) {
-    const rad = Math.pow(r(), 1.4) * 3.1;
+  // Halo: loose dust filling the frame, gathering towards the core.
+  for (let i = 0; i < n(5200); i++) {
+    const rad = Math.pow(r(), 1.2) * 3.3 * S;
     const a = r() * Math.PI * 2;
-    add(Math.cos(a) * rad, gauss() * 0.35 * (0.3 + rad * 0.25), Math.sin(a) * rad, DUST, orbit(rad) * 0.6, 0.006 + r() * 0.006);
+    add(Math.cos(a) * rad, gauss() * 0.45 * (0.3 + (rad / S) * 0.25), Math.sin(a) * rad, DUST, orbit(rad) * 0.6, 0.006 + r() * 0.006);
   }
 
   // Core: a dense, bright knot at the centre.
   for (let i = 0; i < n(1800); i++) {
-    const rad = 0.04 + Math.pow(r(), 2) * 0.55;
+    const rad = (0.04 + Math.pow(r(), 2) * 0.55) * S;
     const a = r() * Math.PI * 2;
-    add(Math.cos(a) * rad, gauss() * 0.05, Math.sin(a) * rad, DUST, orbit(rad), 0.006 + r() * 0.006);
-  }
-
-  // The stream out of the centre.
-  for (let i = 0; i < n(3400); i++) {
-    add(r() * 3.6, gauss(), gauss(), STREAM, 0.22 + r() * 0.12, 0.007 + r() * 0.006);
+    add(Math.cos(a) * rad, well(rad) + gauss() * 0.06, Math.sin(a) * rad, DUST, orbit(rad), 0.006 + r() * 0.006);
   }
 
   // Bead chains: glowing dots in short arcs, shrinking along each chain.
   const chains = [
-    { rad: 2.05, y: 0.35, from: 2.2, beads: 8 },
-    { rad: 0.5, y: -0.04, from: 4.1, beads: 6 },
-    { rad: 1.55, y: -0.32, from: 5.4, beads: 7 },
+    { rad: 1.4, y: 0.3, from: 2.2, beads: 8 },
+    { rad: 0.45, y: -0.04, from: 4.1, beads: 6 },
+    { rad: 1.05, y: -0.28, from: 5.4, beads: 7 },
   ];
   for (const c of chains) {
+    const rad = c.rad * S;
     for (let i = 0; i < c.beads; i++) {
       const a = c.from + i * 0.11;
       const t = i / (c.beads - 1);
-      add(Math.cos(a) * c.rad, c.y + t * 0.05, Math.sin(a) * c.rad, BEAD, orbit(c.rad) * 0.5, 0.11 - t * 0.06);
+      add(Math.cos(a) * rad, c.y + t * 0.05, Math.sin(a) * rad, BEAD, orbit(rad) * 0.5, 0.1 - t * 0.055);
     }
   }
 
