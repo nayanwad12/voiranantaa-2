@@ -57,7 +57,7 @@ export function FileDrop({
           add(e.dataTransfer.files);
         }}
         className={cx(
-          "flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed px-6 py-10 text-center transition-colors",
+          "flex flex-col items-center justify-center gap-3 border border-dashed px-6 py-10 text-center transition-colors",
           drag ? "border-mustard bg-mustard/10" : error ? "border-red" : "border-line bg-ink/40",
         )}
       >
@@ -87,7 +87,7 @@ export function FileDrop({
       {files.length > 0 && (
         <ul className="grid gap-2" aria-label="Selected files">
           {files.map((f, i) => (
-            <li key={f.name + f.size} className="glass flex items-center justify-between gap-4 rounded-lg px-4 py-3 text-sm">
+            <li key={f.name + f.size} className="glass flex items-center justify-between gap-4 px-4 py-3 text-sm">
               <span className="truncate text-paper">{f.name}</span>
               <span className="flex shrink-0 items-center gap-4 text-mute">
                 {fmt(f.size)}

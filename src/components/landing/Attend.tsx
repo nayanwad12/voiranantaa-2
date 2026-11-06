@@ -77,7 +77,7 @@ export function Attend() {
             </p>
           </dl>
 
-          <div className="at-form rounded-[1.6rem] border border-white/12 bg-night/80 p-6 backdrop-blur-xl md:p-10">
+          <div className="at-form border border-white/12 bg-night/80 p-6 backdrop-blur-xl md:p-10">
             <p className="label mb-2 text-mustard">Visitor registration</p>
             <h3 className="mb-8 font-display text-4xl font-bold uppercase leading-none">Register your interest</h3>
             <VisitorForm />

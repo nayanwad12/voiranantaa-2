@@ -58,7 +58,7 @@ export function Finale() {
             <li key={t.href} className="fin-tile">
               <a
                 href={t.href}
-                className={`group flex h-full flex-col justify-between gap-10 rounded-[1.4rem] p-6 transition-transform duration-500 hover:-translate-y-1 md:p-8 ${t.tone}`}
+                className={`group flex h-full flex-col justify-between gap-10 p-6 transition-transform duration-500 hover:-translate-y-1 md:p-8 ${t.tone}`}
               >
                 <span className="font-display text-5xl font-bold uppercase leading-none">{t.label}</span>
                 <span className="flex items-end justify-between gap-4 text-sm">

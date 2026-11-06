@@ -36,7 +36,7 @@ export function ContactForm({ defaultTopic }: { defaultTopic?: ContactInput["top
 
   if (done) {
     return (
-      <div role="status" className="glass rounded-2xl p-8">
+      <div role="status" className="glass p-8">
         <p className="label mb-3">Message received</p>
         <p className="display-sm">Thank you. We&rsquo;ll reply by email.</p>
         <p className="mt-4 text-sm text-mute">Reference {done}</p>

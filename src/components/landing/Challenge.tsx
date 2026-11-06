@@ -44,7 +44,7 @@ export function Challenge() {
   return (
     <section ref={ref} data-form="5" className="relative overflow-hidden">
       <div className="ch-stage page-x mx-auto flex min-h-[100svh] max-w-page items-center py-24">
-        <div className="grid w-full gap-10 rounded-[2rem] bg-teal p-7 text-paper sm:p-10 md:grid-cols-[1.3fr_1fr] md:items-center md:gap-16 md:p-14">
+        <div className="grid w-full gap-10 bg-teal p-7 text-paper sm:p-10 md:grid-cols-[1.3fr_1fr] md:items-center md:gap-16 md:p-14">
           <div>
             <p className="label mb-6 text-paper/75">The challenge</p>
             <p className="font-display font-bold leading-none">

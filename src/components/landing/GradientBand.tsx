@@ -10,9 +10,9 @@ export function GradientBand() {
   useSectionMotion(ref, (el) => {
     gsap.fromTo(
       el.querySelector(".band"),
-      { clipPath: "inset(0% 48% 0% 48% round 999px)" },
+      { clipPath: "inset(0% 48% 0% 48%)" },
       {
-        clipPath: "inset(0% 0% 0% 0% round 0px)",
+        clipPath: "inset(0% 0% 0% 0%)",
         ease: "power2.inOut",
         scrollTrigger: { trigger: el, start: "top 85%", end: "top 25%", scrub: 0.8 },
       },

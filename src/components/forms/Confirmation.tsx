@@ -49,12 +49,12 @@ export function Confirmation({
     <div role="status" className="grid gap-6">
       <h3 className="font-display text-[clamp(2.6rem,6vw,4.6rem)] font-bold uppercase leading-[0.88]">{c.title}</h3>
       <div className="grid gap-3">
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/15 px-5 py-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 border border-white/15 px-5 py-4">
           <span className="label text-mute">{kind === "participant" ? "Application ID" : "Reference"}</span>
           <span className="font-mono text-lg tracking-wider">{reference}</span>
         </div>
         {kind === "participant" && (
-          <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/15 px-5 py-4">
+          <div className="flex flex-wrap items-center justify-between gap-4 border border-white/15 px-5 py-4">
             <span className="label text-mute">Payment status</span>
             <span className="flex items-center gap-3">
               {fee ? formatINR(fee) : null}

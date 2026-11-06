@@ -332,7 +332,7 @@ export function ParticipantForm() {
             )}
           </fieldset>
 
-          <section aria-labelledby="payment-heading" className="glass relative overflow-hidden rounded-2xl p-6 sm:p-8">
+          <section aria-labelledby="payment-heading" className="glass relative overflow-hidden p-6 sm:p-8">
             <span aria-hidden="true" className="absolute inset-y-0 left-0 w-[3px] bg-green" />
             <h3 id="payment-heading" className="text-2xl">
               Payment

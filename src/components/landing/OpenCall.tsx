@@ -73,7 +73,7 @@ export function OpenCall() {
             { label: "Students", fee: edition.fees.student },
             { label: "Others", fee: edition.fees.others },
           ].map((f) => (
-            <div key={f.label} className="oc-fee rounded-[1.4rem] border border-white/15 bg-night p-6 text-paper md:p-8">
+            <div key={f.label} className="oc-fee border border-white/15 bg-night p-6 text-paper md:p-8">
               <p className="font-sans text-xs font-semibold uppercase tracking-[0.22em] text-mustard">{f.label}</p>
               <p className="mt-6 font-display text-[clamp(2.6rem,5vw,4.6rem)] font-bold leading-none">{formatINR(f.fee)}</p>
               <p className="mt-2 text-xs text-mute">Application fee</p>
@@ -85,7 +85,7 @@ export function OpenCall() {
             <ApplyButton className="pill pill-solid justify-center py-5 text-sm">Register to participate →</ApplyButton>
           ) : (
             <>
-              <div className="rounded-[1.4rem] border border-white/20 p-6">
+              <div className=" border border-white/20 p-6">
                 <p className="font-sans text-xs font-semibold uppercase tracking-[0.22em]">Registration opens</p>
                 <p className="mt-2 font-display text-[clamp(1.8rem,3vw,2.6rem)] font-bold uppercase leading-none">
                   {edition.registrationOpensLabel}

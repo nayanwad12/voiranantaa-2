@@ -67,7 +67,7 @@ export function Connect() {
             </div>
           </dl>
         </div>
-        <div className="cn-in rounded-[1.6rem] border border-white/12 bg-night/80 p-6 backdrop-blur-xl md:p-10">
+        <div className="cn-in border border-white/12 bg-night/80 p-6 backdrop-blur-xl md:p-10">
           <ContactForm />
         </div>
       </div>

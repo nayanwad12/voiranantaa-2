@@ -90,7 +90,7 @@ export function MenuOverlay({ open, onClose }: { open: boolean; onClose: () => v
                     <a
                       href={j.href}
                       onClick={onClose}
-                      className="flex items-center justify-between rounded-2xl border border-white/12 px-5 py-4 font-sans text-sm font-semibold uppercase tracking-[0.16em] transition-colors hover:border-white/40"
+                      className="flex items-center justify-between border border-white/12 px-5 py-4 font-sans text-sm font-semibold uppercase tracking-[0.16em] transition-colors hover:border-white/40"
                     >
                       <span className="flex items-center gap-3">
                         <span aria-hidden="true" className="h-2 w-2 rounded-full" style={{ background: accentVar[j.accent] }} />

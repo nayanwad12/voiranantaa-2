@@ -75,7 +75,7 @@ export function Partners() {
             style={{ gridTemplateRows: open ? "1fr" : "0fr", opacity: open ? 1 : 0 }}
           >
             <div className="overflow-hidden">
-              <div className="mt-8 grid gap-10 rounded-[1.6rem] border border-white/12 bg-night/80 p-6 backdrop-blur-xl md:grid-cols-[0.7fr_1.6fr] md:p-10">
+              <div className="mt-8 grid gap-10 border border-white/12 bg-night/80 p-6 backdrop-blur-xl md:grid-cols-[0.7fr_1.6fr] md:p-10">
                 <div>
                   <p className="label mb-2 text-mustard">Partner enquiry</p>
                   <h3 className="font-display text-4xl font-bold uppercase leading-none">Tell us what you&rsquo;d bring</h3>

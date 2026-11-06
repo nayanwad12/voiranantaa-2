@@ -97,7 +97,7 @@ export function Live() {
             <article
               key={card.title}
               className={cx(
-                "live-card flex flex-col justify-between rounded-[1.6rem] p-7 md:absolute md:inset-0 md:p-10",
+                "live-card flex flex-col justify-between p-7 md:absolute md:inset-0 md:p-10",
                 card.tone,
               )}
               style={{ zIndex: i + 1 }}

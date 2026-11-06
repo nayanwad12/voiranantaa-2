@@ -70,7 +70,7 @@ export function Selection() {
           {edition.selection.winners} category winners.
         </p>
 
-        <div className="mt-16 grid gap-px overflow-hidden rounded-[1.4rem] border border-white/12 bg-white/12 md:grid-cols-3">
+        <div className="mt-16 grid gap-px overflow-hidden border border-white/12 bg-white/12 md:grid-cols-3">
           {[
             { n: edition.selection.finalistsPerCategory, label: "Finalists", sub: "RAGA / FORM" },
             { n: edition.selection.finalistsPerCategory, label: "Finalists", sub: "RAGA / VOICE" },
@@ -122,12 +122,12 @@ export function Selection() {
                   className="lens-card group relative block aspect-[4/3] w-full text-left [transform-style:preserve-3d]"
                   aria-label={`${c.name}: ${c.question}`}
                 >
-                  <span className="lens-face absolute inset-0 flex flex-col justify-between rounded-[1.2rem] border border-white/12 bg-night p-5 md:p-7">
+                  <span className="lens-face absolute inset-0 flex flex-col justify-between border border-white/12 bg-night p-5 md:p-7">
                     <span className="font-sans text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-mute">{String(i + 1).padStart(2, "0")}</span>
                     <span className="font-display text-[clamp(2rem,4vw,3.6rem)] font-bold uppercase leading-none">{c.name}</span>
                   </span>
                   <span
-                    className="lens-back absolute inset-0 flex flex-col justify-between rounded-[1.2rem] p-5 text-black md:p-7"
+                    className="lens-back absolute inset-0 flex flex-col justify-between p-5 text-black md:p-7"
                     style={{ background: `var(--${c.accent === "pink" ? "white" : "blue"})` }}
                   >
                     <span className="font-sans text-[0.68rem] font-semibold uppercase tracking-[0.22em]">{c.name}</span>

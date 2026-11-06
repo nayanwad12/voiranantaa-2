@@ -147,7 +147,7 @@ export function HowToParticipate() {
           <span aria-hidden="true" className="ht-bar absolute bottom-0 left-[0.55rem] top-0 hidden w-px origin-top scale-y-0 bg-mustard md:block" />
           <ol className="grid gap-2">
             {STEPS.map((s, i) => (
-              <li key={s.title} className="ht-step group relative rounded-2xl py-4 pl-10 pr-4 transition-colors duration-500">
+              <li key={s.title} className="ht-step group relative py-4 pl-10 pr-4 transition-colors duration-500">
                 <span
                   aria-hidden="true"
                   className="absolute left-0 top-6 h-[1.15rem] w-[1.15rem] rounded-full border border-white/30 bg-black transition-colors duration-500 group-[.is-active]:border-mustard group-[.is-active]:bg-mustard group-[.is-done]:border-mustard"
@@ -179,7 +179,7 @@ export function HowToParticipate() {
             <div
               key={f.title}
               className={cx(
-                "ht-col rounded-[1.4rem] p-7",
+                "ht-col p-7",
                 i === 0 ? "bg-mustard text-black" : i === 1 ? "bg-navy text-paper" : "bg-teal text-paper",
               )}
             >
@@ -195,7 +195,7 @@ export function HowToParticipate() {
             </div>
           ))}
         </div>
-        <div className="mt-10 flex flex-col gap-4 rounded-[1.4rem] bg-paper p-6 text-black sm:flex-row sm:items-center sm:justify-between md:p-8">
+        <div className="mt-10 flex flex-col gap-4 bg-paper p-6 text-black sm:flex-row sm:items-center sm:justify-between md:p-8">
           <div>
             <p className="label text-black/60">{edition.registrationOpen ? "Registration is open" : "Registration opens"}</p>
             <p className="mt-1 font-display text-[clamp(1.8rem,3vw,2.6rem)] font-bold uppercase leading-none">
