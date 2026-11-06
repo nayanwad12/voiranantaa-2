@@ -16,6 +16,7 @@ import {
   starVertex,
   viewMatrix,
 } from "./sky";
+import skyStill from "./sky-still.jpg";
 
 /**
  * The night sky behind the whole page. Scrolling pans the camera across the
@@ -59,8 +60,9 @@ export function Universe() {
     if (!skyCanvas || !starCanvas) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const small = window.matchMedia("(max-width: 768px)").matches;
+    // Only Save-Data opts out; core counts are unreliable (many browsers report 2 for privacy).
     const nav = navigator as Navigator & { connection?: { saveData?: boolean } };
-    const weak = (nav.hardwareConcurrency ?? 4) <= 2 || nav.connection?.saveData;
+    const weak = nav.connection?.saveData;
     const opts = { antialias: false, depth: false, powerPreference: "high-performance" as const };
     const sky = weak ? null : (skyCanvas.getContext("webgl", { ...opts, alpha: false }) as WebGLRenderingContext | null);
     const stars = weak ? null : (starCanvas.getContext("webgl", { ...opts, alpha: true, premultipliedAlpha: true }) as WebGLRenderingContext | null);
@@ -200,6 +202,15 @@ export function Universe() {
       }
     };
 
+    // If the browser drops the GPU context (common on phones), show the still sky instead.
+    const onLost = (e: Event) => {
+      e.preventDefault();
+      cancelAnimationFrame(raf);
+      setFallback(true);
+    };
+    skyCanvas.addEventListener("webglcontextlost", onLost);
+    starCanvas.addEventListener("webglcontextlost", onLost);
+
     resize();
     window.addEventListener("resize", resize);
     window.addEventListener("pointermove", onPointer, { passive: true });
@@ -207,6 +218,8 @@ export function Universe() {
     raf = requestAnimationFrame(frame);
     return () => {
       cancelAnimationFrame(raf);
+      skyCanvas.removeEventListener("webglcontextlost", onLost);
+      starCanvas.removeEventListener("webglcontextlost", onLost);
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", onPointer);
       document.removeEventListener("visibilitychange", onVisibility);
@@ -217,11 +230,8 @@ export function Universe() {
     <div
       aria-hidden="true"
       className="pointer-events-none fixed inset-0 -z-10 h-lvh w-full"
-      style={{
-        background: fallback
-          ? "radial-gradient(ellipse 80% 30% at 45% 55%, rgba(120,135,180,.22), transparent 70%), linear-gradient(#03060f, #070d22)"
-          : "#03060f",
-      }}
+      // A still of the same sky shows before the 3D sky starts, and wherever it cannot run.
+      style={{ background: `#03060f url(${skyStill.src}) center / cover no-repeat` }}
     >
       <canvas ref={skyRef} className="absolute inset-0 h-full w-full" style={{ opacity: fallback ? 0 : 1 }} />
       <canvas ref={starRef} className="absolute inset-0 h-full w-full" style={{ opacity: fallback ? 0 : 1 }} />
