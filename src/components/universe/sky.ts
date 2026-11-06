@@ -61,15 +61,15 @@ void main() {
   float band = exp(-h * h / (width * width));
   float halo = exp(-h * h / (width * width * 6.0));
   float core = pow(toCore, 5.0);
-  float glow = band * (0.2 + 0.8 * n1) * (0.45 + 0.55 * n3) * (0.5 + 2.0 * core);
+  float glow = band * (0.25 + 0.75 * n1) * (0.25 + 0.75 * n3 * n3) * (0.6 + 2.0 * core);
   // Ragged dark dust lanes along the middle of the band.
   float lane = smoothstep(0.52, 0.74, n2) * exp(-(h - 0.012) * (h - 0.012) / (width * width * 0.35));
-  glow *= 1.0 - 0.75 * lane;
+  glow *= 1.0 - 0.85 * lane;
 
   // Navy blue night, a touch lighter around the band.
   vec3 col = mix(vec3(0.012, 0.02, 0.05), vec3(0.04, 0.06, 0.14), clamp(0.3 + 0.5 * halo + 0.12 * dir.y, 0.0, 1.0));
-  vec3 glowCol = mix(vec3(0.42, 0.5, 0.74), vec3(0.92, 0.78, 0.68), clamp(core * 1.6, 0.0, 1.0));
-  col += glowCol * (glow * 0.34 + halo * (0.04 + 0.06 * core) * n1);
+  vec3 glowCol = mix(vec3(0.5, 0.58, 0.82), vec3(0.9, 0.8, 0.74), clamp(core * 1.3, 0.0, 1.0));
+  col += glowCol * (glow * 0.5 + halo * (0.06 + 0.08 * core) * n1);
 
   // A faint nebula in the section's accent colour, drifting slowly.
   float cloud = smoothstep(0.4, 0.85, fbm(dir * 1.6 + vec3(0.0, uTime * 0.006, uTime * 0.004)));
@@ -204,7 +204,7 @@ export function buildStars(density: number) {
   };
 
   // Stars all over the sky.
-  for (let i = 0; i < n(34000); i++) {
+  for (let i = 0; i < n(60000); i++) {
     const u = r() * 2 - 1;
     const a = r() * Math.PI * 2;
     const s = Math.sqrt(1 - u * u);
@@ -215,7 +215,7 @@ export function buildStars(density: number) {
 
   // Stars crowding the Milky Way, densest towards the core.
   const side = norm(cross(BAND, CORE));
-  for (let i = 0; i < n(18000); i++) {
+  for (let i = 0; i < n(34000); i++) {
     const a = r() < 0.6 ? gauss() * 0.6 : (r() * 2 - 1) * Math.PI;
     const off = gauss() * (0.04 + 0.05 * Math.exp(-a * a));
     const d = norm([
@@ -226,6 +226,19 @@ export function buildStars(density: number) {
     const size = r() < 0.03 ? 1.6 + r() : 0.9 + r() * 0.6;
     pos.push(d[0] * FAR, d[1] * FAR, d[2] * FAR);
     info.push(size, 0.3 + Math.pow(r(), 2) * 0.7, r() < 0.3 ? 0.4 + r() * 0.5 : r() * 0.2, r());
+  }
+
+  // Speckle: tiny faint stars packed into the band, so it reads as grain, not mist.
+  for (let i = 0; i < n(40000); i++) {
+    const a = r() < 0.7 ? gauss() * 0.55 : (r() * 2 - 1) * Math.PI;
+    const off = gauss() * (0.035 + 0.04 * Math.exp(-a * a));
+    const d = norm([
+      CORE[0] * Math.cos(a) + side[0] * Math.sin(a) + BAND[0] * off,
+      CORE[1] * Math.cos(a) + side[1] * Math.sin(a) + BAND[1] * off,
+      CORE[2] * Math.cos(a) + side[2] * Math.sin(a) + BAND[2] * off,
+    ]);
+    pos.push(d[0] * FAR, d[1] * FAR, d[2] * FAR);
+    info.push(0.8 + r() * 0.3, 0.18 + r() * 0.3, r() < 0.4 ? 0.5 + r() * 0.4 : r() * 0.2, r());
   }
 
   // Near stars around the camera's path, for depth as you travel.

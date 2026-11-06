@@ -50,6 +50,8 @@
 
   /* Film grain: dark speckle (for text fills) and light/dark grain (overlay). */
   --grain-text: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 2.2 -1.05'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  /* Fine, high-frequency grain like a long-exposure night photograph. */
+  --grain-sky: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='s'><feTurbulence type='fractalNoise' baseFrequency='1.6' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23s)'/></svg>");
   --grain-film: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>");
 
   /* DIN Condensed for headings; Barlow Condensed covers any glyph it lacks. */
@@ -457,9 +459,9 @@
 
 /* Film grain over the whole page. */
 .grain {
-  background-image: var(--grain-film);
-  background-size: 220px 220px;
-  opacity: 0.28;
+  background-image: var(--grain-sky);
+  background-size: 180px 180px;
+  opacity: 0.38;
   mix-blend-mode: overlay;
   animation: grain 0.9s steps(6) infinite;
 }
