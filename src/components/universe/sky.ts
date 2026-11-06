@@ -2,8 +2,9 @@
  * The night sky behind the whole page: a deep navy sky crossed by the Milky
  * Way (clouds of stars around a warm core, threaded with dark dust), over a
  * hundred thousand stars at real depth, and a sparse layer of near stars
- * that drift past as the camera moves. Two layers: the sky glow is a soft
- * shader; the stars are crisp points drawn over it, following the same
+ * that drift past as the camera moves. One canvas: the sky glow is a soft
+ * shader drawn at low resolution and stretched to fill the screen; the stars
+ * are crisp points added over it, following the same
  * galaxy model so they crowd into its clouds and vanish behind its dust.
  * Sections can tint the sky with a faint nebula colour, on and off.
  */
@@ -68,6 +69,19 @@ vec4 milky(vec3 dir) {
    Sky glow: navy, the light of the star clouds, dust, and an optional
    accent nebula. Computed per pixel from the view direction.
 ------------------------------------------------------------------- */
+
+/** Draws the low-resolution sky glow, stretched to fill the screen. */
+export const blitVertex = /* glsl */ `
+attribute vec2 aPos;
+varying vec2 vUv;
+void main() { vUv = aPos * 0.5 + 0.5; gl_Position = vec4(aPos, 0.0, 1.0); }
+`;
+export const blitFragment = /* glsl */ `
+precision mediump float;
+uniform sampler2D uTex;
+varying vec2 vUv;
+void main() { gl_FragColor = vec4(texture2D(uTex, vUv).rgb, 1.0); }
+`;
 
 export const skyVertex = /* glsl */ `
 attribute vec2 aPos;
@@ -173,8 +187,8 @@ void main() {
   // Small stars keep a full centre; bright ones get a soft halo.
   float dot1 = 1.0 - smoothstep(0.18, 0.5, d);
   float halo = exp(-d * d * 16.0) * 0.6 + smoothstep(0.16, 0.03, d);
-  // Alpha 0 with additive blending: the stars add light over the sky below.
-  gl_FragColor = vec4(vColor * mix(dot1, halo, vGlow), 0.0);
+  // Added onto the sky already drawn in the same canvas.
+  gl_FragColor = vec4(vColor * mix(dot1, halo, vGlow), 1.0);
 }
 `;
 

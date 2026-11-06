@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import {
   BAND,
   basis,
+  blitFragment,
+  blitVertex,
   buildStars,
   CORE,
   eyeAt,
@@ -19,7 +21,7 @@ import {
 import skyStill from "./sky-still.jpg";
 
 /**
- * The night sky behind the whole page. Scrolling pans the camera across the
+ * The night sky behind the whole page, drawn in one canvas. Scrolling pans the camera across the
  * sky and glides it forward through near stars; sections name their mood with
  * `data-form="0..11"`, which can tint the sky with a faint nebula colour.
  * Everything eases, so the sky always moves smoothly.
@@ -50,80 +52,97 @@ function readTarget() {
 }
 
 export function Universe() {
-  const skyRef = useRef<HTMLCanvasElement>(null);
-  const starRef = useRef<HTMLCanvasElement>(null);
+  const ref = useRef<HTMLCanvasElement>(null);
   const [fallback, setFallback] = useState(false);
 
   useEffect(() => {
-    const skyCanvas = skyRef.current;
-    const starCanvas = starRef.current;
-    if (!skyCanvas || !starCanvas) return;
+    const canvas = ref.current;
+    if (!canvas) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const small = window.matchMedia("(max-width: 768px)").matches;
     // Only Save-Data opts out; core counts are unreliable (many browsers report 2 for privacy).
     const nav = navigator as Navigator & { connection?: { saveData?: boolean } };
-    const weak = nav.connection?.saveData;
-    const opts = { antialias: false, depth: false, powerPreference: "high-performance" as const };
-    const sky = weak ? null : (skyCanvas.getContext("webgl", { ...opts, alpha: false }) as WebGLRenderingContext | null);
-    const stars = weak ? null : (starCanvas.getContext("webgl", { ...opts, alpha: true, premultipliedAlpha: true }) as WebGLRenderingContext | null);
-    const skyProgram = sky && build(sky, skyVertex, skyFragment);
-    const starProgram = stars && build(stars, starVertex, starFragment);
-    if (!sky || !stars || !skyProgram || !starProgram) {
+    // One opaque canvas for the glow and the stars, so no browser has to blend layers.
+    const gl = nav.connection?.saveData
+      ? null
+      : (canvas.getContext("webgl", { antialias: false, alpha: false, depth: false, powerPreference: "high-performance" }) as WebGLRenderingContext | null);
+    const skyProgram = gl && build(gl, skyVertex, skyFragment);
+    const blitProgram = gl && build(gl, blitVertex, blitFragment);
+    const starProgram = gl && build(gl, starVertex, starFragment);
+    if (!gl || !skyProgram || !blitProgram || !starProgram) {
       setFallback(true);
       return;
     }
 
-    // Sky layer: one full-screen triangle.
-    sky.useProgram(skyProgram);
-    sky.bindBuffer(sky.ARRAY_BUFFER, sky.createBuffer());
-    sky.bufferData(sky.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), sky.STATIC_DRAW);
-    const skyPos = sky.getAttribLocation(skyProgram, "aPos");
-    sky.enableVertexAttribArray(skyPos);
-    sky.vertexAttribPointer(skyPos, 2, sky.FLOAT, false, 0, 0);
-    const su = (n: string) => sky.getUniformLocation(skyProgram, n);
-    const SU = { res: su("uRes"), cam: su("uCam"), lens: su("uLens"), time: su("uTime"), accent: su("uAccent"), amount: su("uAccentAmt"), level: su("uLevel") };
-    sky.uniform3fv(su("uBand"), BAND);
-    sky.uniform3fv(su("uCore"), CORE);
-
-    // Star layer: points, added over the sky.
-    const field = buildStars(small ? 0.55 : 1);
-    stars.useProgram(starProgram);
-    const attr = (name: string, values: Float32Array, size: number) => {
-      stars.bindBuffer(stars.ARRAY_BUFFER, stars.createBuffer());
-      stars.bufferData(stars.ARRAY_BUFFER, values, stars.STATIC_DRAW);
-      const loc = stars.getAttribLocation(starProgram, name);
-      stars.enableVertexAttribArray(loc);
-      stars.vertexAttribPointer(loc, size, stars.FLOAT, false, 0, 0);
+    // Buffers. WebGL 1 has no vertex array objects, so each draw binds its own.
+    const buffer = (values: Float32Array) => {
+      const b = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, b);
+      gl.bufferData(gl.ARRAY_BUFFER, values, gl.STATIC_DRAW);
+      return b;
     };
-    attr("aPos", field.pos, 3);
-    attr("aInfo", field.info, 4);
-    const tu = (n: string) => stars.getUniformLocation(starProgram, n);
+    const tri = buffer(new Float32Array([-1, -1, 3, -1, -1, 3]));
+    const field = buildStars(small ? 0.55 : 1);
+    const starPos = buffer(field.pos);
+    const starInfo = buffer(field.info);
+    const bindProgram = (program: WebGLProgram, attrs: [string, WebGLBuffer | null, number][]) => {
+      gl.useProgram(program);
+      for (let i = 0; i < 4; i++) gl.disableVertexAttribArray(i);
+      for (const [name, buf, size] of attrs) {
+        const loc = gl.getAttribLocation(program, name);
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.enableVertexAttribArray(loc);
+        gl.vertexAttribPointer(loc, size, gl.FLOAT, false, 0, 0);
+      }
+    };
+
+    const su = (n: string) => gl.getUniformLocation(skyProgram, n);
+    const SU = { res: su("uRes"), cam: su("uCam"), lens: su("uLens"), time: su("uTime"), accent: su("uAccent"), amount: su("uAccentAmt"), level: su("uLevel") };
+    const tu = (n: string) => gl.getUniformLocation(starProgram, n);
     const TU = { proj: tu("uProj"), view: tu("uView"), time: tu("uTime"), scale: tu("uScale"), dpr: tu("uDpr"), level: tu("uLevel") };
-    stars.uniform3fv(tu("uBand"), BAND);
-    stars.uniform3fv(tu("uCore"), CORE);
-    stars.enable(stars.BLEND);
-    stars.blendFunc(stars.ONE, stars.ONE);
-    stars.clearColor(0, 0, 0, 0);
+    gl.useProgram(skyProgram);
+    gl.uniform3fv(su("uBand"), BAND);
+    gl.uniform3fv(su("uCore"), CORE);
+    gl.useProgram(starProgram);
+    gl.uniform3fv(tu("uBand"), BAND);
+    gl.uniform3fv(tu("uCore"), CORE);
+    gl.useProgram(blitProgram);
+    gl.uniform1i(gl.getUniformLocation(blitProgram, "uTex"), 0);
+
+    // The sky glow is soft by nature: draw it small, off screen, then stretch it.
+    const glowTex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, glowTex);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    const glowFbo = gl.createFramebuffer();
+    gl.clearColor(0, 0, 0, 1);
 
     const fov = (58 * Math.PI) / 180;
     const dpr = Math.min(window.devicePixelRatio || 1, small ? 1.5 : 1.75);
-    // The sky glow is soft by nature: render it smaller and let the browser upscale.
     const skyScale = small ? 0.45 : 0.6;
+    const glow = { w: 2, h: 2 };
     let dirty = true;
     const resize = () => {
-      const w = starCanvas.clientWidth;
-      const h = starCanvas.clientHeight;
-      skyCanvas.width = Math.max(2, Math.round(w * skyScale));
-      skyCanvas.height = Math.max(2, Math.round(h * skyScale));
-      sky.viewport(0, 0, skyCanvas.width, skyCanvas.height);
-      sky.uniform2f(SU.res, skyCanvas.width, skyCanvas.height);
-      sky.uniform2f(SU.lens, Math.tan(fov / 2) * (w / h), Math.tan(fov / 2));
-      starCanvas.width = Math.max(2, Math.round(w * dpr));
-      starCanvas.height = Math.max(2, Math.round(h * dpr));
-      stars.viewport(0, 0, starCanvas.width, starCanvas.height);
-      stars.uniformMatrix4fv(TU.proj, false, perspective(fov, w / h, 0.05, 2000));
-      stars.uniform1f(TU.scale, h / (2 * Math.tan(fov / 2)));
-      stars.uniform1f(TU.dpr, dpr);
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      canvas.width = Math.max(2, Math.round(w * dpr));
+      canvas.height = Math.max(2, Math.round(h * dpr));
+      glow.w = Math.max(2, Math.round(w * skyScale));
+      glow.h = Math.max(2, Math.round(h * skyScale));
+      gl.bindTexture(gl.TEXTURE_2D, glowTex);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, glow.w, glow.h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, glowFbo);
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, glowTex, 0);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      gl.useProgram(skyProgram);
+      gl.uniform2f(SU.res, glow.w, glow.h);
+      gl.uniform2f(SU.lens, Math.tan(fov / 2) * (w / h), Math.tan(fov / 2));
+      gl.useProgram(starProgram);
+      gl.uniformMatrix4fv(TU.proj, false, perspective(fov, w / h, 0.05, 2000));
+      gl.uniform1f(TU.scale, h / (2 * Math.tan(fov / 2)));
+      gl.uniform1f(TU.dpr, dpr);
       dirty = true;
     };
 
@@ -179,18 +198,37 @@ export function Universe() {
       const cam = basis(view.yaw + time * 0.002 + look.x * 0.05, view.pitch - look.y * 0.035, view.roll);
       const eye = eyeAt(cur.p);
 
-      sky.uniformMatrix3fv(SU.cam, false, new Float32Array([...cam.r, ...cam.u, ...cam.f]));
-      sky.uniform1f(SU.time, time);
-      sky.uniform3f(SU.accent, cur.accent[0], cur.accent[1], cur.accent[2]);
-      sky.uniform1f(SU.amount, cur.amount);
-      sky.uniform1f(SU.level, cur.level);
-      sky.drawArrays(sky.TRIANGLES, 0, 3);
+      // 1. The glow, off screen at low resolution.
+      gl.bindFramebuffer(gl.FRAMEBUFFER, glowFbo);
+      gl.viewport(0, 0, glow.w, glow.h);
+      gl.disable(gl.BLEND);
+      bindProgram(skyProgram, [["aPos", tri, 2]]);
+      gl.uniformMatrix3fv(SU.cam, false, new Float32Array([...cam.r, ...cam.u, ...cam.f]));
+      gl.uniform1f(SU.time, time);
+      gl.uniform3f(SU.accent, cur.accent[0], cur.accent[1], cur.accent[2]);
+      gl.uniform1f(SU.amount, cur.amount);
+      gl.uniform1f(SU.level, cur.level);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
 
-      stars.uniformMatrix4fv(TU.view, false, viewMatrix(eye, cam));
-      stars.uniform1f(TU.time, time);
-      stars.uniform1f(TU.level, cur.level);
-      stars.clear(stars.COLOR_BUFFER_BIT);
-      stars.drawArrays(stars.POINTS, 0, field.count);
+      // 2. The glow, stretched over the whole canvas.
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      bindProgram(blitProgram, [["aPos", tri, 2]]);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, glowTex);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+      // 3. The stars, added on top.
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.ONE, gl.ONE);
+      bindProgram(starProgram, [
+        ["aPos", starPos, 3],
+        ["aInfo", starInfo, 4],
+      ]);
+      gl.uniformMatrix4fv(TU.view, false, viewMatrix(eye, cam));
+      gl.uniform1f(TU.time, time);
+      gl.uniform1f(TU.level, cur.level);
+      gl.drawArrays(gl.POINTS, 0, field.count);
     };
 
     const onVisibility = () => {
@@ -208,8 +246,7 @@ export function Universe() {
       cancelAnimationFrame(raf);
       setFallback(true);
     };
-    skyCanvas.addEventListener("webglcontextlost", onLost);
-    starCanvas.addEventListener("webglcontextlost", onLost);
+    canvas.addEventListener("webglcontextlost", onLost);
 
     resize();
     window.addEventListener("resize", resize);
@@ -218,8 +255,7 @@ export function Universe() {
     raf = requestAnimationFrame(frame);
     return () => {
       cancelAnimationFrame(raf);
-      skyCanvas.removeEventListener("webglcontextlost", onLost);
-      starCanvas.removeEventListener("webglcontextlost", onLost);
+      canvas.removeEventListener("webglcontextlost", onLost);
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", onPointer);
       document.removeEventListener("visibilitychange", onVisibility);
@@ -233,8 +269,7 @@ export function Universe() {
       // A still of the same sky shows before the 3D sky starts, and wherever it cannot run.
       style={{ background: `#03060f url(${skyStill.src}) center / cover no-repeat` }}
     >
-      <canvas ref={skyRef} className="absolute inset-0 h-full w-full" style={{ opacity: fallback ? 0 : 1 }} />
-      <canvas ref={starRef} className="absolute inset-0 h-full w-full" style={{ opacity: fallback ? 0 : 1 }} />
+      <canvas ref={ref} className="absolute inset-0 h-full w-full" style={{ opacity: fallback ? 0 : 1 }} />
     </div>
   );
 }
