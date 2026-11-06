@@ -97,14 +97,16 @@ export function Universe() {
     attr("aInfo", field.info, 4);
     const tu = (n: string) => stars.getUniformLocation(starProgram, n);
     const TU = { proj: tu("uProj"), view: tu("uView"), time: tu("uTime"), scale: tu("uScale"), dpr: tu("uDpr"), level: tu("uLevel") };
+    stars.uniform3fv(tu("uBand"), BAND);
+    stars.uniform3fv(tu("uCore"), CORE);
     stars.enable(stars.BLEND);
     stars.blendFunc(stars.ONE, stars.ONE);
     stars.clearColor(0, 0, 0, 0);
 
     const fov = (58 * Math.PI) / 180;
     const dpr = Math.min(window.devicePixelRatio || 1, small ? 1.5 : 1.75);
-    // The sky glow is soft by nature: render it small and let the browser upscale.
-    const skyScale = small ? 0.35 : 0.42;
+    // The sky glow is soft by nature: render it smaller and let the browser upscale.
+    const skyScale = small ? 0.45 : 0.6;
     let dirty = true;
     const resize = () => {
       const w = starCanvas.clientWidth;

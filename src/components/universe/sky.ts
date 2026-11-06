@@ -1,33 +1,22 @@
 /**
  * The night sky behind the whole page: a deep navy sky crossed by the Milky
- * Way (a glowing band of dust with a warm core and dark lanes), tens of
- * thousands of stars at real depth, and a sparse layer of near stars that
- * drift past as the camera moves. Two layers: the sky glow is a soft,
- * low-resolution shader; the stars are crisp points drawn over it.
+ * Way (clouds of stars around a warm core, threaded with dark dust), over a
+ * hundred thousand stars at real depth, and a sparse layer of near stars
+ * that drift past as the camera moves. Two layers: the sky glow is a soft
+ * shader; the stars are crisp points drawn over it, following the same
+ * galaxy model so they crowd into its clouds and vanish behind its dust.
  * Sections can tint the sky with a faint nebula colour, on and off.
  */
 
 /* ------------------------------------------------------------------
-   Sky glow: navy, the Milky Way band, its core and dust lanes, and an
-   optional accent nebula. Computed per pixel from the view direction.
+   The galaxy model, shared by the sky glow and the stars so they agree:
+   star clouds are where the band's stars crowd, dust is where both the
+   glow and the stars behind it are blocked.
 ------------------------------------------------------------------- */
 
-export const skyVertex = /* glsl */ `
-attribute vec2 aPos;
-void main() { gl_Position = vec4(aPos, 0.0, 1.0); }
-`;
-
-export const skyFragment = /* glsl */ `
-precision highp float;
-uniform vec2 uRes;
-uniform mat3 uCam;        // columns: right, up, forward
-uniform vec2 uLens;       // tan(fov/2) * aspect, tan(fov/2)
-uniform float uTime;
+const MODEL = /* glsl */ `
 uniform vec3 uBand;       // normal of the galactic plane
 uniform vec3 uCore;       // direction of the galactic core
-uniform vec3 uAccent;     // nebula colour
-uniform float uAccentAmt; // 0 = pure night sky
-uniform float uLevel;
 
 float hash(vec3 p) {
   p = fract(p * 0.3183099 + 0.1);
@@ -42,42 +31,85 @@ float noise(vec3 x) {
 }
 float fbm(vec3 p) {
   float v = 0.0, a = 0.5;
-  for (int i = 0; i < 4; i++) { v += a * noise(p); p = p * 2.03 + 11.7; a *= 0.5; }
+  for (int i = 0; i < 5; i++) { v += a * noise(p); p = p * 2.07 + 11.7; a *= 0.5; }
+  return v / 0.96875;
+}
+// Ridged noise: thin bright ridges, used for the filaments of dust.
+float ridge(vec3 p) {
+  float v = 0.0, a = 0.5;
+  for (int i = 0; i < 4; i++) { float n = 1.0 - abs(noise(p) * 2.0 - 1.0); v += a * n * n; p = p * 2.11 + 5.3; a *= 0.5; }
   return v / 0.9375;
 }
+
+// x: star clouds (light of the band), y: dust (0 clear, 1 opaque), z: core, w: band profile.
+vec4 milky(vec3 dir) {
+  float h = dot(dir, uBand);
+  float toCore = max(dot(dir, uCore), 0.0);
+  vec3 q = dir * 4.0;
+  vec3 warp = vec3(fbm(q), fbm(q + 7.1), fbm(q + 3.3)) - 0.5;
+  float wide = fbm(dir * 2.2);
+  float width = 0.08 + 0.05 * wide + 0.07 * toCore * toCore;
+  float hw = h + warp.x * 0.05;
+  float band = exp(-hw * hw / (width * width));
+  float core = pow(toCore, 7.0);
+  // Clouds of stars: big mottled lobes and small bright knots.
+  float lobes = fbm(dir * 7.0 + warp * 1.4);
+  float knots = fbm(dir * 22.0 + warp * 2.0);
+  float clouds = band * (0.18 + 0.82 * smoothstep(0.32, 0.78, lobes)) * (0.55 + 0.75 * knots * knots) * (0.55 + 2.2 * core);
+  // Dust: filaments threading the band, and darker lanes along its middle.
+  float fil = pow(ridge(dir * 9.0 + warp * 2.5), 2.2);
+  float rift = exp(-(hw - 0.018) * (hw - 0.018) / (width * width * 0.22)) * smoothstep(0.35, 0.65, fbm(dir * 5.0 + 2.0));
+  float dust = clamp((fil * 0.8 + rift * 0.65) * exp(-hw * hw / (width * width * 2.2)), 0.0, 1.0);
+  return vec4(clouds, dust, core, band);
+}
+`;
+
+/* ------------------------------------------------------------------
+   Sky glow: navy, the light of the star clouds, dust, and an optional
+   accent nebula. Computed per pixel from the view direction.
+------------------------------------------------------------------- */
+
+export const skyVertex = /* glsl */ `
+attribute vec2 aPos;
+void main() { gl_Position = vec4(aPos, 0.0, 1.0); }
+`;
+
+export const skyFragment = /* glsl */ `
+precision highp float;
+uniform vec2 uRes;
+uniform mat3 uCam;        // columns: right, up, forward
+uniform vec2 uLens;       // tan(fov/2) * aspect, tan(fov/2)
+uniform float uTime;
+uniform vec3 uAccent;     // nebula colour
+uniform float uAccentAmt; // 0 = pure night sky
+uniform float uLevel;
+${MODEL}
 
 void main() {
   vec2 ndc = gl_FragCoord.xy / uRes * 2.0 - 1.0;
   vec3 dir = normalize(uCam * vec3(ndc.x * uLens.x, ndc.y * uLens.y, 1.0));
+  vec4 m = milky(dir);
+  float clouds = m.x, dust = m.y, core = m.z, band = m.w;
+  float clear = 1.0 - 0.92 * dust;
 
-  float h = dot(dir, uBand);                 // distance from the galactic plane
-  float toCore = max(dot(dir, uCore), 0.0);  // 1 at the core
-  float n1 = fbm(dir * 3.0);
-  float n2 = fbm(dir * 14.0 + 4.0);
-  float n3 = fbm(dir * 26.0 + 9.0);
+  // Navy night, lifted a little by the band's faint wide glow.
+  float halo = pow(band, 0.25);
+  vec3 col = mix(vec3(0.016, 0.026, 0.07), vec3(0.05, 0.075, 0.18), clamp(0.25 + 0.55 * halo + 0.1 * dir.y, 0.0, 1.0));
+  col *= 1.0 - 0.45 * dust;
 
-  // The band: narrow, mottled with star clouds, brighter towards the core.
-  float width = 0.075 + 0.05 * n1 + 0.06 * toCore;
-  float band = exp(-h * h / (width * width));
-  float halo = exp(-h * h / (width * width * 6.0));
-  float core = pow(toCore, 5.0);
-  float glow = band * (0.25 + 0.75 * n1) * (0.25 + 0.75 * n3 * n3) * (0.6 + 2.0 * core);
-  // Ragged dark dust lanes along the middle of the band.
-  float lane = smoothstep(0.52, 0.74, n2) * exp(-(h - 0.012) * (h - 0.012) / (width * width * 0.35));
-  glow *= 1.0 - 0.85 * lane;
-
-  // Navy blue night, a touch lighter around the band.
-  vec3 col = mix(vec3(0.012, 0.02, 0.05), vec3(0.04, 0.06, 0.14), clamp(0.3 + 0.5 * halo + 0.12 * dir.y, 0.0, 1.0));
-  vec3 glowCol = mix(vec3(0.5, 0.58, 0.82), vec3(0.9, 0.8, 0.74), clamp(core * 1.3, 0.0, 1.0));
-  col += glowCol * (glow * 0.5 + halo * (0.06 + 0.08 * core) * n1);
+  // Unresolved starlight: blue-white in the arms, warm towards the core.
+  vec3 light = mix(vec3(0.56, 0.66, 0.92), vec3(0.95, 0.82, 0.74), clamp(core * 1.4, 0.0, 1.0));
+  col += light * clouds * clear * 0.62;
+  // Dust edges catch a little brown, as in photographs.
+  col += vec3(0.14, 0.08, 0.06) * dust * (1.0 - dust) * band * 0.45;
 
   // A faint nebula in the section's accent colour, drifting slowly.
   float cloud = smoothstep(0.4, 0.85, fbm(dir * 1.6 + vec3(0.0, uTime * 0.006, uTime * 0.004)));
-  col += uAccent * uAccentAmt * (cloud * 0.9 + band * 0.45) * 0.75;
+  col += uAccent * uAccentAmt * (cloud * 0.9 + band * 0.45) * 0.75 * clear;
 
   col *= uLevel;
   // Dither so the smooth glow never shows steps.
-  col += (hash(vec3(gl_FragCoord.xy, fract(uTime))) - 0.5) * (2.0 / 255.0);
+  col += (hash(vec3(gl_FragCoord.xy, fract(uTime) * 61.0)) - 0.5) * (2.0 / 255.0);
   gl_FragColor = vec4(max(col, 0.0), 1.0);
 }
 `;
@@ -89,7 +121,7 @@ void main() {
 
 export const starVertex = /* glsl */ `
 attribute vec3 aPos;
-attribute vec4 aInfo;     // size, brightness, warmth, phase
+attribute vec4 aInfo;     // size, brightness, colour (0 blue … 1 orange), phase (+1 for Milky Way stars)
 uniform mat4 uProj;
 uniform mat4 uView;
 uniform float uTime;
@@ -98,6 +130,7 @@ uniform float uDpr;
 uniform float uLevel;
 varying vec3 vColor;
 varying float vGlow;
+${MODEL}
 
 void main() {
   vec4 mv = uView * vec4(aPos, 1.0);
@@ -109,11 +142,22 @@ void main() {
   float bright = aInfo.y * clamp(px, 0.0, 1.0);
   // Near stars fade in from the distance and out as they pass the camera.
   bright *= mix(smoothstep(0.6, 2.0, depth) * smoothstep(40.0, 18.0, depth), 1.0, far);
-  gl_PointSize = clamp(px, 1.0, mix(3.0, 9.0, far)) * uDpr;
-  bright *= 0.82 + 0.18 * sin(uTime * (0.5 + aInfo.w * 2.0) + aInfo.w * 40.0);
-  vec3 cold = vec3(0.8, 0.87, 1.0);
-  vec3 warm = vec3(1.0, 0.86, 0.72);
-  vColor = mix(cold, warm, aInfo.z) * bright * uLevel;
+
+  // Distant stars follow the galaxy: Milky Way stars crowd into its clouds,
+  // and dust hides whatever lies behind it.
+  if (far > 0.5) {
+    vec4 m = milky(normalize(aPos));
+    float banded = step(1.0, aInfo.w);
+    bright *= mix(1.0, smoothstep(0.02, 0.5, m.x) * 1.4, banded) * (1.0 - 0.9 * m.y);
+  }
+
+  gl_PointSize = clamp(px, 1.0, mix(3.0, 10.0, far)) * uDpr;
+  float ph = fract(aInfo.w);
+  bright *= 0.85 + 0.15 * sin(uTime * (0.5 + ph * 2.0) + ph * 40.0);
+  // Star colours: mostly blue-white, some white, a few yellow and orange.
+  vec3 c = aInfo.z < 0.5 ? mix(vec3(0.72, 0.82, 1.0), vec3(1.0, 0.98, 0.95), aInfo.z * 2.0)
+                         : mix(vec3(1.0, 0.95, 0.86), vec3(1.0, 0.72, 0.5), aInfo.z * 2.0 - 1.0);
+  vColor = c * bright * uLevel;
   vGlow = step(3.2, px) * far;
 }
 `;
@@ -198,47 +242,38 @@ export function buildStars(density: number) {
   const info: number[] = [];
   const n = (count: number) => Math.round(count * density);
   const FAR = 600;
-  const sizeFar = () => {
+  // Colour: mostly blue-white, some white, a few yellow and orange.
+  const tint = () => {
     const k = r();
-    return k < 0.006 ? 4 + r() * 3 : k < 0.06 ? 1.8 + r() * 1.2 : 1 + r() * 0.9;
+    return k < 0.55 ? r() * 0.35 : k < 0.85 ? 0.35 + r() * 0.3 : 0.65 + r() * 0.35;
   };
 
-  // Stars all over the sky.
-  for (let i = 0; i < n(60000); i++) {
+  // Stars all over the sky: a great many faint ones, fewer bright, a handful brilliant.
+  for (let i = 0; i < n(70000); i++) {
     const u = r() * 2 - 1;
     const a = r() * Math.PI * 2;
-    const s = Math.sqrt(1 - u * u);
-    const size = sizeFar();
-    pos.push(Math.cos(a) * s * FAR, u * FAR, Math.sin(a) * s * FAR);
-    info.push(size, size > 3.5 ? 1.25 : 0.4 + Math.pow(r(), 1.6) * 0.9, r() < 0.18 ? 0.5 + r() * 0.5 : r() * 0.25, r());
+    const sq = Math.sqrt(1 - u * u);
+    const mag = Math.pow(r(), 3.2);
+    const brilliant = r() < 0.0025;
+    const size = brilliant ? 4.5 + r() * 3.5 : 0.9 + mag * 2.2;
+    pos.push(Math.cos(a) * sq * FAR, u * FAR, Math.sin(a) * sq * FAR);
+    info.push(size, brilliant ? 1.3 : 0.22 + mag * 1.1, tint(), r());
   }
 
-  // Stars crowding the Milky Way, densest towards the core.
+  // Milky Way stars, crowding along the band and towards the core. The
+  // shader keeps the ones that fall in star clouds and hides those behind dust.
   const side = norm(cross(BAND, CORE));
-  for (let i = 0; i < n(34000); i++) {
-    const a = r() < 0.6 ? gauss() * 0.6 : (r() * 2 - 1) * Math.PI;
-    const off = gauss() * (0.04 + 0.05 * Math.exp(-a * a));
+  for (let i = 0; i < n(130000); i++) {
+    const a = r() < 0.6 ? gauss() * 0.65 : (r() * 2 - 1) * Math.PI;
+    const off = gauss() * (0.045 + 0.05 * Math.exp(-a * a));
     const d = norm([
       CORE[0] * Math.cos(a) + side[0] * Math.sin(a) + BAND[0] * off,
       CORE[1] * Math.cos(a) + side[1] * Math.sin(a) + BAND[1] * off,
       CORE[2] * Math.cos(a) + side[2] * Math.sin(a) + BAND[2] * off,
     ]);
-    const size = r() < 0.03 ? 1.6 + r() : 0.9 + r() * 0.6;
+    const mag = Math.pow(r(), 3.6);
     pos.push(d[0] * FAR, d[1] * FAR, d[2] * FAR);
-    info.push(size, 0.3 + Math.pow(r(), 2) * 0.7, r() < 0.3 ? 0.4 + r() * 0.5 : r() * 0.2, r());
-  }
-
-  // Speckle: tiny faint stars packed into the band, so it reads as grain, not mist.
-  for (let i = 0; i < n(40000); i++) {
-    const a = r() < 0.7 ? gauss() * 0.55 : (r() * 2 - 1) * Math.PI;
-    const off = gauss() * (0.035 + 0.04 * Math.exp(-a * a));
-    const d = norm([
-      CORE[0] * Math.cos(a) + side[0] * Math.sin(a) + BAND[0] * off,
-      CORE[1] * Math.cos(a) + side[1] * Math.sin(a) + BAND[1] * off,
-      CORE[2] * Math.cos(a) + side[2] * Math.sin(a) + BAND[2] * off,
-    ]);
-    pos.push(d[0] * FAR, d[1] * FAR, d[2] * FAR);
-    info.push(0.8 + r() * 0.3, 0.18 + r() * 0.3, r() < 0.4 ? 0.5 + r() * 0.4 : r() * 0.2, r());
+    info.push(0.8 + mag * 1.4, 0.13 + mag * 0.85, tint() * 0.8, 1 + r());
   }
 
   // Near stars around the camera's path, for depth as you travel.
@@ -251,7 +286,7 @@ export function buildStars(density: number) {
       at[1] + (r() * 2 - 1) * 6,
       at[2] + (r() * 2 - 1) * 9 - Math.cos(ahead.yaw) * lead,
     );
-    info.push(0.01 + r() * 0.012, 0.35 + r() * 0.45, r() * 0.4, r());
+    info.push(0.01 + r() * 0.012, 0.35 + r() * 0.45, tint(), r());
   }
 
   return { pos: new Float32Array(pos), info: new Float32Array(info), count: info.length / 4 };
