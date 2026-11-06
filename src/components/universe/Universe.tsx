@@ -1,14 +1,27 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { buildParticles, galaxyFragment, galaxyVertex, lookAt, perspective, SCENES, tilt } from "./galaxy";
+import {
+  BAND,
+  basis,
+  buildStars,
+  CORE,
+  eyeAt,
+  lookAt,
+  perspective,
+  SCENES,
+  skyFragment,
+  skyVertex,
+  starFragment,
+  starVertex,
+  viewMatrix,
+} from "./sky";
 
 /**
- * The particle universe behind the whole page. Sections name their mood with
- * `data-form="0..11"`; each mood sets a shape (vortex, air, fire, water,
- * earth), colours and a camera. Everything eases towards the mood in view, so
- * scrolling travels through one continuous space: shapes scatter and
- * re-form between chapters while the camera surges forward.
+ * The night sky behind the whole page. Scrolling pans the camera across the
+ * sky and glides it forward through near stars; sections name their mood with
+ * `data-form="0..11"`, which can tint the sky with a faint nebula colour.
+ * Everything eases, so the sky always moves smoothly.
  */
 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
@@ -36,84 +49,87 @@ function readTarget() {
 }
 
 export function Universe() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const skyRef = useRef<HTMLCanvasElement>(null);
+  const starRef = useRef<HTMLCanvasElement>(null);
   const [fallback, setFallback] = useState(false);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const skyCanvas = skyRef.current;
+    const starCanvas = starRef.current;
+    if (!skyCanvas || !starCanvas) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const small = window.matchMedia("(max-width: 768px)").matches;
     const nav = navigator as Navigator & { connection?: { saveData?: boolean } };
-    const gl =
-      (nav.hardwareConcurrency ?? 4) <= 2 || nav.connection?.saveData
-        ? null
-        : (canvas.getContext("webgl", { antialias: false, alpha: false, depth: false, powerPreference: "high-performance" }) as WebGLRenderingContext | null);
-    const program = gl && build(gl);
-    if (!gl || !program) {
+    const weak = (nav.hardwareConcurrency ?? 4) <= 2 || nav.connection?.saveData;
+    const opts = { antialias: false, depth: false, powerPreference: "high-performance" as const };
+    const sky = weak ? null : (skyCanvas.getContext("webgl", { ...opts, alpha: false }) as WebGLRenderingContext | null);
+    const stars = weak ? null : (starCanvas.getContext("webgl", { ...opts, alpha: true, premultipliedAlpha: true }) as WebGLRenderingContext | null);
+    const skyProgram = sky && build(sky, skyVertex, skyFragment);
+    const starProgram = stars && build(stars, starVertex, starFragment);
+    if (!sky || !stars || !skyProgram || !starProgram) {
       setFallback(true);
       return;
     }
 
-    const parts = buildParticles(small ? 0.55 : 1);
-    gl.useProgram(program);
-    const attr = (name: string, values: Float32Array, size: number) => {
-      gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-      gl.bufferData(gl.ARRAY_BUFFER, values, gl.STATIC_DRAW);
-      const loc = gl.getAttribLocation(program, name);
-      gl.enableVertexAttribArray(loc);
-      gl.vertexAttribPointer(loc, size, gl.FLOAT, false, 0, 0);
-    };
-    attr("aA", parts.a, 4);
-    attr("aB", parts.b, 4);
-    attr("aInfo", parts.info, 2);
-    const u = (n: string) => gl.getUniformLocation(program, n);
-    const U = {
-      proj: u("uProj"),
-      view: u("uView"),
-      tilt: u("uTilt"),
-      time: u("uTime"),
-      scale: u("uScale"),
-      dpr: u("uDpr"),
-      w: u("uW"),
-      colA: u("uColA"),
-      colB: u("uColB"),
-      level: u("uLevel"),
-    };
-    gl.uniformMatrix3fv(U.tilt, false, tilt(0.95, -0.15));
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.ONE, gl.ONE);
-    gl.clearColor(0, 0, 0, 1);
+    // Sky layer: one full-screen triangle.
+    sky.useProgram(skyProgram);
+    sky.bindBuffer(sky.ARRAY_BUFFER, sky.createBuffer());
+    sky.bufferData(sky.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), sky.STATIC_DRAW);
+    const skyPos = sky.getAttribLocation(skyProgram, "aPos");
+    sky.enableVertexAttribArray(skyPos);
+    sky.vertexAttribPointer(skyPos, 2, sky.FLOAT, false, 0, 0);
+    const su = (n: string) => sky.getUniformLocation(skyProgram, n);
+    const SU = { res: su("uRes"), cam: su("uCam"), lens: su("uLens"), time: su("uTime"), accent: su("uAccent"), amount: su("uAccentAmt"), level: su("uLevel") };
+    sky.uniform3fv(su("uBand"), BAND);
+    sky.uniform3fv(su("uCore"), CORE);
 
-    const fov = (55 * Math.PI) / 180;
+    // Star layer: points, added over the sky.
+    const field = buildStars(small ? 0.55 : 1);
+    stars.useProgram(starProgram);
+    const attr = (name: string, values: Float32Array, size: number) => {
+      stars.bindBuffer(stars.ARRAY_BUFFER, stars.createBuffer());
+      stars.bufferData(stars.ARRAY_BUFFER, values, stars.STATIC_DRAW);
+      const loc = stars.getAttribLocation(starProgram, name);
+      stars.enableVertexAttribArray(loc);
+      stars.vertexAttribPointer(loc, size, stars.FLOAT, false, 0, 0);
+    };
+    attr("aPos", field.pos, 3);
+    attr("aInfo", field.info, 4);
+    const tu = (n: string) => stars.getUniformLocation(starProgram, n);
+    const TU = { proj: tu("uProj"), view: tu("uView"), time: tu("uTime"), scale: tu("uScale"), dpr: tu("uDpr"), level: tu("uLevel") };
+    stars.enable(stars.BLEND);
+    stars.blendFunc(stars.ONE, stars.ONE);
+    stars.clearColor(0, 0, 0, 0);
+
+    const fov = (58 * Math.PI) / 180;
     const dpr = Math.min(window.devicePixelRatio || 1, small ? 1.5 : 1.75);
-    let portrait = false;
+    // The sky glow is soft by nature: render it small and let the browser upscale.
+    const skyScale = small ? 0.35 : 0.42;
     let dirty = true;
     const resize = () => {
-      const w = canvas.clientWidth;
-      const h = canvas.clientHeight;
-      portrait = w < h;
-      canvas.width = Math.max(2, Math.round(w * dpr));
-      canvas.height = Math.max(2, Math.round(h * dpr));
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.uniformMatrix4fv(U.proj, false, perspective(fov, w / h, 0.05, 60));
-      gl.uniform1f(U.scale, h / (2 * Math.tan(fov / 2)));
-      gl.uniform1f(U.dpr, dpr);
+      const w = starCanvas.clientWidth;
+      const h = starCanvas.clientHeight;
+      skyCanvas.width = Math.max(2, Math.round(w * skyScale));
+      skyCanvas.height = Math.max(2, Math.round(h * skyScale));
+      sky.viewport(0, 0, skyCanvas.width, skyCanvas.height);
+      sky.uniform2f(SU.res, skyCanvas.width, skyCanvas.height);
+      sky.uniform2f(SU.lens, Math.tan(fov / 2) * (w / h), Math.tan(fov / 2));
+      starCanvas.width = Math.max(2, Math.round(w * dpr));
+      starCanvas.height = Math.max(2, Math.round(h * dpr));
+      stars.viewport(0, 0, starCanvas.width, starCanvas.height);
+      stars.uniformMatrix4fv(TU.proj, false, perspective(fov, w / h, 0.05, 2000));
+      stars.uniform1f(TU.scale, h / (2 * Math.tan(fov / 2)));
+      stars.uniform1f(TU.dpr, dpr);
       dirty = true;
     };
 
-    // The visible mood, eased towards the scroll-driven one. Easing the values
-    // themselves (not the blend index) keeps chapter boundaries seamless.
-    const first = SCENES[readTarget().from] ?? SCENES[0];
-    const cur = {
-      w: Float32Array.from({ length: 5 }, (_, i) => (i === first.shape ? 1 : 0)),
-      colA: [...first.colA],
-      colB: [...first.colB],
-      level: first.level,
-      yaw: first.yaw,
-      pitch: first.pitch,
-      dist: first.dist,
+    // Everything visible eases towards where the scroll says it should be.
+    const progress = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      return max > 0 ? clamp(window.scrollY / max, 0, 1) : 0;
     };
+    const first = SCENES[readTarget().from] ?? SCENES[0];
+    const cur = { p: progress(), accent: [...first.accent], amount: first.amount, level: first.level };
     const pointer = { x: 0, y: 0 };
     const look = { x: 0, y: 0 };
     const onPointer = (e: PointerEvent) => {
@@ -121,7 +137,7 @@ export function Universe() {
       pointer.y = (e.clientY / window.innerHeight) * 2 - 1;
     };
 
-    let time = 20;
+    let time = 0;
     let last = performance.now();
     let raf = 0;
 
@@ -133,25 +149,19 @@ export function Universe() {
       const a = SCENES[target.from] ?? SCENES[0];
       const b = SCENES[target.to] ?? a;
       const m = target.mix;
-      const ease = reduced ? 1 : 1 - Math.exp(-dt * 1.4);
+      const ease = (rate: number) => (reduced ? 1 : 1 - Math.exp(-dt * rate));
       let changed = false;
-      const approach = (v: number, to: number) => {
-        const next = v + (to - v) * ease;
-        if (Math.abs(next - v) > 1e-4) changed = true;
+      const approach = (v: number, to: number, rate: number) => {
+        const next = v + (to - v) * ease(rate);
+        if (Math.abs(next - v) > 1e-5) changed = true;
         return next;
       };
-      for (let i = 0; i < 5; i++) cur.w[i] = approach(cur.w[i], lerp(i === a.shape ? 1 : 0, i === b.shape ? 1 : 0, m));
-      for (let i = 0; i < 3; i++) {
-        cur.colA[i] = approach(cur.colA[i], lerp(a.colA[i], b.colA[i], m));
-        cur.colB[i] = approach(cur.colB[i], lerp(a.colB[i], b.colB[i], m));
-      }
-      cur.level = approach(cur.level, lerp(a.level, b.level, m));
-      cur.yaw = approach(cur.yaw, lerp(a.yaw, b.yaw, m));
-      cur.pitch = approach(cur.pitch, lerp(a.pitch, b.pitch, m));
-      cur.dist = approach(cur.dist, lerp(a.dist, b.dist, m));
-      const follow = reduced ? 1 : 1 - Math.exp(-dt * 2.5);
-      look.x += (pointer.x - look.x) * follow;
-      look.y += (pointer.y - look.y) * follow;
+      cur.p = approach(cur.p, progress(), 2.2);
+      for (let i = 0; i < 3; i++) cur.accent[i] = approach(cur.accent[i], lerp(a.accent[i], b.accent[i], m), 1.2);
+      cur.amount = approach(cur.amount, lerp(a.amount, b.amount, m), 1.2);
+      cur.level = approach(cur.level, lerp(a.level, b.level, m), 1.2);
+      look.x = approach(look.x, pointer.x, 1.8);
+      look.y = approach(look.y, pointer.y, 1.8);
 
       if (reduced) {
         if (!changed && !dirty) return;
@@ -160,23 +170,23 @@ export function Universe() {
       }
       dirty = false;
 
-      // Between shapes the camera surges forward through the scattering dust.
-      const between = clamp((1 - Math.max(...cur.w)) * 2, 0, 1);
-      const surge = between * between * (3 - 2 * between);
-      // A slow turn tied to the whole page keeps the journey continuous.
-      const drift = (window.scrollY / window.innerHeight) * 0.035;
-      const radius = cur.dist * (portrait ? 1.55 : 1) * (1 - surge * 0.28);
-      const yaw = cur.yaw + drift + look.x * 0.12;
-      const pitch = cur.pitch - look.y * 0.08;
-      const eye = [Math.sin(yaw) * Math.cos(pitch) * radius, Math.sin(pitch) * radius, Math.cos(yaw) * Math.cos(pitch) * radius];
-      gl.uniformMatrix4fv(U.view, false, lookAt(eye, [0, 0, 0], [0, 1, 0]));
-      gl.uniform1fv(U.w, cur.w);
-      gl.uniform3f(U.colA, cur.colA[0], cur.colA[1], cur.colA[2]);
-      gl.uniform3f(U.colB, cur.colB[0], cur.colB[1], cur.colB[2]);
-      gl.uniform1f(U.level, cur.level);
-      gl.uniform1f(U.time, time);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      gl.drawArrays(gl.POINTS, 0, parts.count);
+      const view = lookAt(cur.p);
+      // A very slow drift over time, and a gentle tilt with the pointer.
+      const cam = basis(view.yaw + time * 0.002 + look.x * 0.05, view.pitch - look.y * 0.035, view.roll);
+      const eye = eyeAt(cur.p);
+
+      sky.uniformMatrix3fv(SU.cam, false, new Float32Array([...cam.r, ...cam.u, ...cam.f]));
+      sky.uniform1f(SU.time, time);
+      sky.uniform3f(SU.accent, cur.accent[0], cur.accent[1], cur.accent[2]);
+      sky.uniform1f(SU.amount, cur.amount);
+      sky.uniform1f(SU.level, cur.level);
+      sky.drawArrays(sky.TRIANGLES, 0, 3);
+
+      stars.uniformMatrix4fv(TU.view, false, viewMatrix(eye, cam));
+      stars.uniform1f(TU.time, time);
+      stars.uniform1f(TU.level, cur.level);
+      stars.clear(stars.COLOR_BUFFER_BIT);
+      stars.drawArrays(stars.POINTS, 0, field.count);
     };
 
     const onVisibility = () => {
@@ -204,31 +214,32 @@ export function Universe() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 -z-10 h-lvh w-full bg-black"
-      style={
-        fallback
-          ? { background: "radial-gradient(ellipse at 50% 50%, rgba(214,220,255,.08), transparent 60%), #000" }
-          : undefined
-      }
+      className="pointer-events-none fixed inset-0 -z-10 h-lvh w-full"
+      style={{
+        background: fallback
+          ? "radial-gradient(ellipse 80% 30% at 45% 55%, rgba(120,135,180,.22), transparent 70%), linear-gradient(#03060f, #070d22)"
+          : "#03060f",
+      }}
     >
-      <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" style={{ opacity: fallback ? 0 : 1 }} />
+      <canvas ref={skyRef} className="absolute inset-0 h-full w-full" style={{ opacity: fallback ? 0 : 1 }} />
+      <canvas ref={starRef} className="absolute inset-0 h-full w-full" style={{ opacity: fallback ? 0 : 1 }} />
     </div>
   );
 }
 
-function build(gl: WebGLRenderingContext) {
+function build(gl: WebGLRenderingContext, vsSrc: string, fsSrc: string) {
   const sh = (type: number, src: string) => {
     const s = gl.createShader(type)!;
     gl.shaderSource(s, src);
     gl.compileShader(s);
     if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
-      console.warn("[universe]", gl.getShaderInfoLog(s));
+      console.warn("[sky]", gl.getShaderInfoLog(s));
       return null;
     }
     return s;
   };
-  const vs = sh(gl.VERTEX_SHADER, galaxyVertex);
-  const fs = sh(gl.FRAGMENT_SHADER, galaxyFragment);
+  const vs = sh(gl.VERTEX_SHADER, vsSrc);
+  const fs = sh(gl.FRAGMENT_SHADER, fsSrc);
   if (!vs || !fs) return null;
   const p = gl.createProgram()!;
   gl.attachShader(p, vs);

@@ -2,13 +2,13 @@
 
 Website for **VOIRANANTAA Edition 01 / Infinite Raga**, a wearable-art competition and live experience by VOIRTALES.
 
-Everything lives on **one landing page**, in five chapters: the edition, **The Theme**, **The Competition**, **The Live Experience** and **Vision**. Behind the whole page is one continuous 3D particle universe (`src/components/universe/`). The same particles re-form for each chapter's element: **sky** is a galaxy vortex with glowing bead chains (black, white and purple), **air** is ribbons of wind (light blue and lemon yellow), **fire** is rising sparks (yellow and orange), **water** is a rolling ocean of dots (blue and black) and **earth** is a planet with a ring (brown, orange and black). Between chapters the particles scatter into a drifting cloud while the camera surges forward, then settle into the next shape; the finale returns to the galaxy. A starfield, a slow turn tied to scroll and a gentle tilt with the pointer carry through everything, and film grain sits on top. The nav bar and menu scroll to sections of the page. The forms open in place: the participant application in a full-screen layer, and the partner, visitor, contact and newsletter forms inline.
+Everything lives on **one landing page**, in five chapters: the edition, **The Theme**, **The Competition**, **The Live Experience** and **Vision**. Behind the whole page is one night sky in 3D (`src/components/universe/`): a navy sky crossed by the Milky Way, with a warm glowing core, star clouds and dark dust lanes, tens of thousands of stars at depth, and near stars that drift past. Scrolling pans the view across the sky, along the Milky Way and away from it, while the camera glides slowly forward. Some sections add a faint nebula tint (blue, crimson, moss or ember) that fades in and out; the rest stay pure night. A gentle tilt with the pointer, and film grain on top. The nav bar and menu scroll to sections of the page. The forms open in place: the participant application in a full-screen layer, and the partner, visitor, contact and newsletter forms inline.
 
 ## Stack
 
 - **Next.js 15** (App Router, TypeScript), **Tailwind CSS 3**
 - **Lenis** for smooth scrolling, **GSAP ScrollTrigger** for pinned scenes and scroll-linked motion
-- A **WebGL** particle universe for the background and a CSS film-grain overlay (`src/components/universe/`)
+- A **WebGL** night sky (glow shader + star points) for the background and a CSS film-grain overlay (`src/components/universe/`)
 - **react-hook-form** + **zod** forms. The same schemas validate in the browser and in the API routes.
 - Self-hosted fonts: **D-DIN Condensed** for headings (Datto's free cut of DIN Condensed, SIL OFL 1.1, in `src/fonts/`), **Montserrat** for body copy, and **Barlow Condensed** as a fallback for glyphs D-DIN lacks
 
@@ -45,7 +45,7 @@ The normal `npm run build` is unchanged by this.
 | Dates, fees, venue, status flags | `src/content/edition.ts` |
 | Rasas, categories, rules, criteria, partner tiers, timeline | `src/content/*.ts` |
 | Colour and type tokens | `src/app/globals.css` (`:root`) + `tailwind.config.ts` |
-| Background shapes, colours and camera per section (`SCENES` in `galaxy.ts`, chosen by each section's `data-form`) + grain | `src/components/universe/` |
+| Night sky, camera path and per-section nebula tints (`SCENES` in `sky.ts`, chosen by each section's `data-form`) + grain | `src/components/universe/` |
 | Landing page order and section anchors | `src/app/page.tsx` |
 | Landing sections | `src/components/landing/` |
 | Forms + validation | `src/components/forms/`, `src/lib/schemas.ts` |
@@ -68,7 +68,7 @@ All copy that is expected to change lives in `src/content/`. These files are typ
 
 - The name is always the complete **VOIRANANTAA**: never split, never abbreviated, always with the double A. The Edition 01 deck's "VOIR ANANTA" was normalised to this.
 - Tagline: **TO SEE THE INFINITE**.
-- Jet black base with a particle universe. The five swatches (navy `#003E76`, mustard `#E2BE22`, olive `#6E9D00`, red `#E31F14`, teal `#39664E`) colour the blocks and accents.
+- A navy night sky with the Milky Way as the base. The five swatches (navy `#003E76`, mustard `#E2BE22`, olive `#6E9D00`, red `#E31F14`, teal `#39664E`) colour the blocks and accents.
 - Headings are translucent and grainy (`.veil`, `.veil-warm`, `.veil-cool`, `.veil-olive` in `globals.css`): light passes through the letters.
 - One gradient banner, used for one statement only: "One theme. Nine emotional worlds. Infinite interpretations."
 - The five cosmic elements organise the site. The nine rasas appear only as theme content (the rasa gallery and the form), never as the site structure.
@@ -78,9 +78,9 @@ All copy that is expected to change lives in `src/content/`. These files are typ
 - **Enter:** the hero name resolves letter by letter, then the tagline.
 - **Transitions:** each chapter opens with its title flying through the camera while the background changes element.
 - **Reveal:** kinetic type, scroll-linked marquees and word-by-word statements.
-- **`prefers-reduced-motion`:** smooth scrolling, pins and animations are off, and the universe is frozen in time. The page shows its static layout.
-- **No WebGL, ≤2 CPU cores or Save-Data:** a plain black background replaces the universe.
-- The universe pauses while the tab is hidden.
+- **`prefers-reduced-motion`:** smooth scrolling, pins and animations are off, and the sky is frozen in time. The page shows its static layout.
+- **No WebGL, ≤2 CPU cores or Save-Data:** a static navy gradient replaces the sky.
+- The sky pauses while the tab is hidden.
 - Skip link, keyboard-trappable menu with Esc to close, labelled form fields with linked errors, and visible focus states.
 
 ## Forms
